@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useProjectStore } from '../store/projectStore';
 import { resourceTemplates } from '../data/resourceTemplates';
 import type { AzureResourceType, ResourceConfig } from '../types';
-import { Plus, Trash2, Search } from 'lucide-react';
+import { Plus, Trash2, Search, ExternalLink, BookOpen, Info } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export default function ResourceSelector() {
@@ -60,6 +60,20 @@ export default function ResourceSelector() {
 
   return (
     <div className="space-y-6">
+      {/* Help Banner */}
+      <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4">
+        <div className="flex items-start space-x-3">
+          <Info className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <h4 className="font-semibold text-purple-900 mb-1">Choosing Azure Resources</h4>
+            <p className="text-sm text-purple-800">
+              Each resource has detailed documentation and pricing information. Click on documentation links to learn about configuration options,
+              SKUs, and Bicep-specific properties. You can add multiple instances of the same resource type.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
@@ -128,6 +142,46 @@ export default function ResourceSelector() {
                 {template.displayName}
               </h3>
               <p className="text-sm text-slate-600 mb-3">{template.description}</p>
+
+              {/* Documentation Links */}
+              {template.docsUrl && (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  <a
+                    href={template.docsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-800"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <BookOpen className="w-3 h-3" />
+                    <span>Docs</span>
+                  </a>
+                  {template.bicepDocsUrl && (
+                    <a
+                      href={template.bicepDocsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center space-x-1 text-xs text-purple-600 hover:text-purple-800"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      <span>Bicep</span>
+                    </a>
+                  )}
+                  {template.pricingUrl && (
+                    <a
+                      href={template.pricingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center space-x-1 text-xs text-green-600 hover:text-green-800"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span>💲</span>
+                      <span>Pricing</span>
+                    </a>
+                  )}
+                </div>
+              )}
 
               <div className="flex items-center justify-between text-xs">
                 <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded">

@@ -128,4 +128,8 @@ export interface ResourceTemplate {
   requiredProperties: string[];
   optionalProperties: string[];
   commonDependencies: AzureResourceType[];
+  docsUrl?: string;
+  bicepDocsUrl?: string;
+  pricingUrl?: string;
+  bestPractices?: string[];
 }

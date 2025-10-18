@@ -8,15 +8,17 @@ import StepIndicator from './components/StepIndicator';
 import QuickStartModal from './components/QuickStartModal';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
 import ExportImport from './components/ExportImport';
+import BicepHelpModal from './components/BicepHelpModal';
 import Tooltip from './components/Tooltip';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save, FileJson } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save, FileJson, BookOpen } from 'lucide-react';
 
 function App() {
   const { currentStep, steps, setCurrentStep, resetProject, project } = useProjectStore();
   const [showQuickStart, setShowQuickStart] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showExportImport, setShowExportImport] = useState(false);
+  const [showBicepHelp, setShowBicepHelp] = useState(false);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
 
   // Show quick start on first visit
@@ -81,6 +83,7 @@ function App() {
       <QuickStartModal isOpen={showQuickStart} onClose={() => setShowQuickStart(false)} />
       <KeyboardShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <ExportImport isOpen={showExportImport} onClose={() => setShowExportImport(false)} />
+      <BicepHelpModal isOpen={showBicepHelp} onClose={() => setShowBicepHelp(false)} />
 
       {/* Save Notification */}
       {showSaveNotification && (
@@ -108,6 +111,16 @@ function App() {
             
             {/* Header Actions */}
             <div className="flex items-center space-x-2">
+              <Tooltip content="Learn About Bicep">
+                <button
+                  onClick={() => setShowBicepHelp(true)}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  aria-label="Bicep Help"
+                >
+                  <BookOpen className="w-5 h-5 text-slate-600" />
+                </button>
+              </Tooltip>
+              
               <Tooltip content="Quick Start Templates">
                 <button
                   onClick={() => setShowQuickStart(true)}
@@ -203,9 +216,88 @@ function App() {
       {/* Footer */}
       <footer className="mt-16 py-8 border-t border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-slate-600 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-3">About BicepFlex</h3>
+              <p className="text-sm text-slate-600">
+                Generate production-ready Azure Bicep templates with best practices built-in.
+                All templates are fully customizable and follow Azure recommendations.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-3">Learn More</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a
+                    href="https://learn.microsoft.com/azure/azure-resource-manager/bicep/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-600 hover:text-primary-700"
+                  >
+                    Bicep Documentation
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://learn.microsoft.com/azure/developer/azure-developer-cli/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-600 hover:text-primary-700"
+                  >
+                    Azure Developer CLI
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://learn.microsoft.com/azure/azure-resource-manager/bicep/best-practices"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-600 hover:text-primary-700"
+                  >
+                    Bicep Best Practices
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a
+                    href="https://learn.microsoft.com/azure/templates/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-600 hover:text-primary-700"
+                  >
+                    Azure Template Reference
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://prices.azure.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-600 hover:text-primary-700"
+                  >
+                    Azure Pricing API
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://learn.microsoft.com/azure/architecture/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-600 hover:text-primary-700"
+                  >
+                    Azure Architecture Center
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-6 border-t border-slate-200 text-center text-slate-600 text-sm">
             <p>
-              Built with ❤️ using{' '}
+              Built with ❤️ for the Azure community • Powered by{' '}
               <a
                 href="https://azure.github.io/azure-dev/"
                 target="_blank"
@@ -213,17 +305,6 @@ function App() {
                 className="text-primary-600 hover:text-primary-700 font-semibold"
               >
                 Azure Developer CLI
-              </a>
-            </p>
-            <p className="mt-2">
-              Pricing data from{' '}
-              <a
-                href="https://prices.azure.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary-600 hover:text-primary-700"
-              >
-                Azure Retail Prices API
               </a>
             </p>
           </div>
