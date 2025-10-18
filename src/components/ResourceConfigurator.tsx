@@ -4,7 +4,7 @@ import { resourceTemplates, serviceNameMapping } from '../data/resourceTemplates
 import { useQuery } from '@tanstack/react-query';
 import { azurePricingService } from '../services/azurePricing';
 import type { AzureSKU } from '../types';
-import { DollarSign, Settings, ChevronDown, ChevronUp } from 'lucide-react';
+import { DollarSign, Settings, ChevronDown, ChevronUp, ExternalLink, BookOpen, Lightbulb, Info } from 'lucide-react';
 
 export default function ResourceConfigurator() {
   const { project, completeStep } = useProjectStore();
@@ -30,7 +30,20 @@ export default function ResourceConfigurator() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Help Banner */}
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
+        <div className="flex items-start space-x-3">
+          <Settings className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <h4 className="font-semibold text-green-900 mb-1">Configuring Your Resources</h4>
+            <p className="text-sm text-green-800">
+              Fine-tune each resource's SKU and properties. All configurations will be parameterized in Bicep,
+              allowing you to customize values for different environments (dev, staging, prod).
+            </p>
+          </div>
+        </div>
+      </div>
       {project.resources.map((resource) => (
         <ResourceConfigCard
           key={resource.id}
@@ -117,6 +130,46 @@ function ResourceConfigCard({
       {/* Expanded Content */}
       {expanded && (
         <div className="border-t border-slate-200 p-6 bg-slate-50 space-y-6">
+          {/* Documentation Links */}
+          {(template.docsUrl || template.bicepDocsUrl || template.pricingUrl) && (
+            <div className="flex flex-wrap gap-3 pb-4 border-b border-slate-200">
+              {template.docsUrl && (
+                <a
+                  href={template.docsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>Service Documentation</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+              {template.bicepDocsUrl && (
+                <a
+                  href={template.bicepDocsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Bicep Template Reference</span>
+                </a>
+              )}
+              {template.pricingUrl && (
+                <a
+                  href={template.pricingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
+                >
+                  <DollarSign className="w-4 h-4" />
+                  <span>Pricing Details</span>
+                </a>
+              )}
+            </div>
+          )}
+
           {/* Resource Name */}
           <div>
             <label className="label">Resource Name</label>
@@ -130,7 +183,10 @@ function ResourceConfigCard({
 
           {/* SKU Selection */}
           <div>
-            <label className="label">Pricing Tier</label>
+            <label className="label flex items-center justify-between">
+              <span>Pricing Tier / SKU</span>
+              <span className="text-xs text-slate-500 font-normal">Configurable in Bicep via sku parameter</span>
+            </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {template.defaultSKUs.map((sku) => {
                 const pricing = pricingData?.get(sku.name);
@@ -184,10 +240,31 @@ function ResourceConfigCard({
             </div>
           )}
 
+          {/* Best Practices */}
+          {template.bestPractices && template.bestPractices.length > 0 && (
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <h4 className="font-semibold text-amber-900 mb-2 flex items-center space-x-2">
+                <Lightbulb className="w-4 h-4" />
+                <span>Best Practices</span>
+              </h4>
+              <ul className="space-y-1.5">
+                {template.bestPractices.map((practice, idx) => (
+                  <li key={idx} className="text-sm text-amber-800 flex items-start space-x-2">
+                    <span className="text-amber-600 mt-0.5">•</span>
+                    <span>{practice}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {/* Pricing Details */}
           {resource.pricing && (
             <div className="p-4 bg-white rounded-lg border border-slate-200">
-              <h4 className="font-semibold text-slate-900 mb-2">Pricing Details</h4>
+              <h4 className="font-semibold text-slate-900 mb-2 flex items-center space-x-2">
+                <DollarSign className="w-4 h-4" />
+                <span>Pricing Details</span>
+              </h4>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-slate-600">Unit Price:</span>
@@ -206,6 +283,10 @@ function ResourceConfigCard({
                   </span>
                 </div>
               </div>
+              <p className="text-xs text-slate-500 mt-2">
+                <Info className="w-3 h-3 inline mr-1" />
+                Estimates are based on Azure Retail Pricing API. Actual costs may vary.
+              </p>
             </div>
           )}
         </div>
