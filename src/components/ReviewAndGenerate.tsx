@@ -1,16 +1,36 @@
 import { useState } from 'react';
 import { useProjectStore } from '../store/projectStore';
 import { bicepGenerator } from '../services/bicepGenerator';
+import { cicdGenerator } from '../services/cicdGenerator';
 import RegionComparison from './RegionComparison';
-import { Download, Copy, Check, FileCode, DollarSign, Globe } from 'lucide-react';
+import TagManager from './TagManager';
+import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag } from 'lucide-react';
+import type { ResourceTag } from '../types/tags';
 
 export default function ReviewAndGenerate() {
   const { project, completeStep } = useProjectStore();
   const [copied, setCopied] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<string>('infra/main.bicep');
   const [showRegionComparison, setShowRegionComparison] = useState(false);
+  const [showTagManager, setShowTagManager] = useState(false);
+  const [includeCICD, setIncludeCICD] = useState(true);
+  const [cicdPlatform, setCICDPlatform] = useState<'github' | 'azure'>('github');
+  const [tags, setTags] = useState<ResourceTag[]>([]);
+  const includeTags = tags.length > 0;
 
-  const generatedFiles = bicepGenerator.generateInfrastructureFiles(project);
+  const generatedFiles = bicepGenerator.generateInfrastructureFiles(project, includeTags, tags);
+  
+  // Add CI/CD files if enabled
+  if (includeCICD) {
+    if (cicdPlatform === 'github') {
+      generatedFiles.set('.github/workflows/deploy.yml', cicdGenerator.generateGitHubActions(project));
+    } else {
+      generatedFiles.set('azure-pipelines.yml', cicdGenerator.generateAzurePipelines(project));
+    }
+    generatedFiles.set('deploy.sh', cicdGenerator.generateDeploymentScript(project));
+    generatedFiles.set('README.md', cicdGenerator.generateReadme(project));
+  }
+  
   const totalCost = project.resources.reduce(
     (sum, r) => sum + (r.pricing?.estimatedMonthlyCost || 0),
     0
@@ -58,17 +78,58 @@ export default function ReviewAndGenerate() {
         </div>
       </div>
 
-      {/* Region Comparison Toggle */}
-      <div className="flex justify-end mb-4">
+      {/* Modals */}
+      <TagManager 
+        isOpen={showTagManager} 
+        onClose={() => setShowTagManager(false)}
+        tags={tags}
+        onTagsChange={setTags}
+      />
+
+      {/* Options Bar */}
+      <div className="flex flex-wrap gap-3 mb-4">
         <button
           onClick={() => setShowRegionComparison(!showRegionComparison)}
           className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-primary-200 rounded-lg hover:bg-primary-50 transition-colors"
         >
           <Globe className="w-5 h-5 text-primary-600" />
           <span className="font-semibold text-primary-600">
-            {showRegionComparison ? 'Hide' : 'Show'} Regional Cost Comparison
+            {showRegionComparison ? 'Hide' : 'Show'} Regional Comparison
           </span>
         </button>
+
+        <button
+          onClick={() => setShowTagManager(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-purple-200 rounded-lg hover:bg-purple-50 transition-colors"
+        >
+          <Tag className="w-5 h-5 text-purple-600" />
+          <span className="font-semibold text-purple-600">
+            Manage Tags {tags.length > 0 && `(${tags.length})`}
+          </span>
+        </button>
+
+        <div className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-slate-200 rounded-lg">
+          <GitBranch className="w-5 h-5 text-slate-600" />
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeCICD}
+              onChange={(e) => setIncludeCICD(e.target.checked)}
+              className="rounded"
+            />
+            <span className="font-semibold text-slate-700">Include CI/CD</span>
+          </label>
+          {includeCICD && (
+            <select
+              value={cicdPlatform}
+              onChange={(e) => setCICDPlatform(e.target.value as 'github' | 'azure')}
+              className="ml-2 px-2 py-1 border border-slate-300 rounded text-sm"
+            >
+              <option value="github">GitHub Actions</option>
+              <option value="azure">Azure Pipelines</option>
+            </select>
+          )}
+        </div>
       </div>
 
       {/* Regional Comparison */}

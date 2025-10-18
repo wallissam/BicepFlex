@@ -2,7 +2,7 @@ import type { ProjectConfig, ResourceConfig, BicepTemplate, AzdConfig } from '..
 import YAML from 'yaml';
 
 export class BicepGenerator {
-  generateBicepTemplate(config: ProjectConfig): BicepTemplate {
+  generateBicepTemplate(config: ProjectConfig, includeTags = false, tags: Array<{key: string, value: string}> = []): BicepTemplate {
     const parameters: Record<string, any> = {
       location: {
         type: 'string',
@@ -48,11 +48,13 @@ export class BicepGenerator {
       .map(([name, param]) => this.generateParameterBicep(name, param))
       .join('\n');
 
+    const tagsSection = includeTags ? this.generateTagsParameter(tags) : '';
+
     const outputSection = Object.entries(outputs)
       .map(([name, output]) => `output ${name} ${output.type} = ${output.value}`)
       .join('\n');
 
-    const content = `${parameterSection}\n\n${resources.join('\n')}\n\n${outputSection}`;
+    const content = `${parameterSection}\n${tagsSection}\n${resources.join('\n')}\n\n${outputSection}`;
 
     return {
       content,
@@ -410,11 +412,11 @@ resource ${resource.name} 'Microsoft.Insights/components@2020-02-02' = {
     return hostMap[resourceType] || 'appservice';
   }
 
-  generateInfrastructureFiles(config: ProjectConfig): Map<string, string> {
+  generateInfrastructureFiles(config: ProjectConfig, includeTags = false, tags: Array<{key: string, value: string}> = []): Map<string, string> {
     const files = new Map<string, string>();
 
     // Generate main.bicep
-    const template = this.generateBicepTemplate(config);
+    const template = this.generateBicepTemplate(config, includeTags, tags);
     files.set('infra/main.bicep', template.content);
 
     // Generate main.parameters.json
@@ -443,6 +445,17 @@ resource ${resource.name} 'Microsoft.Insights/components@2020-02-02' = {
     files.set('.azure/config', azureConfig);
 
     return files;
+  }
+
+  private generateTagsParameter(tags: Array<{key: string, value: string}>): string {
+    if (tags.length === 0) return '';
+    
+    return `
+@description('Resource tags')
+param tags object = {
+${tags.map(tag => `  '${tag.key}': '${tag.value}'`).join('\n')}
+}
+`;
   }
 }
 

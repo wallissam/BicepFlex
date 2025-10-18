@@ -7,14 +7,16 @@ import ReviewAndGenerate from './components/ReviewAndGenerate';
 import StepIndicator from './components/StepIndicator';
 import QuickStartModal from './components/QuickStartModal';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
+import ExportImport from './components/ExportImport';
 import Tooltip from './components/Tooltip';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save, FileJson } from 'lucide-react';
 
 function App() {
   const { currentStep, steps, setCurrentStep, resetProject, project } = useProjectStore();
   const [showQuickStart, setShowQuickStart] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showExportImport, setShowExportImport] = useState(false);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
 
   // Show quick start on first visit
@@ -78,6 +80,7 @@ function App() {
       {/* Modals */}
       <QuickStartModal isOpen={showQuickStart} onClose={() => setShowQuickStart(false)} />
       <KeyboardShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
+      <ExportImport isOpen={showExportImport} onClose={() => setShowExportImport(false)} />
 
       {/* Save Notification */}
       {showSaveNotification && (
@@ -112,6 +115,16 @@ function App() {
                   aria-label="Quick Start"
                 >
                   <Zap className="w-5 h-5 text-slate-600" />
+                </button>
+              </Tooltip>
+              
+              <Tooltip content="Export/Import Project">
+                <button
+                  onClick={() => setShowExportImport(true)}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  aria-label="Export/Import"
+                >
+                  <FileJson className="w-5 h-5 text-slate-600" />
                 </button>
               </Tooltip>
               

@@ -178,17 +178,24 @@ That's it! 🎉 Your infrastructure will be provisioned in Azure.
 - **Template Generation**: Create baseline templates for customization
 - **Team Onboarding**: Help new team members understand Azure options
 
-## 🎉 What's New (Latest Release)
+## 🎉 What's New (v0.3.0 - Latest Release)
 
-- ✅ **Quick Start Templates**: 5 ready-to-use templates for instant productivity
-- ✅ **Regional Cost Comparison**: Save up to 30% by choosing the right region
-- ✅ **Keyboard Shortcuts**: Navigate like a pro with Ctrl shortcuts
-- ✅ **Auto-Save**: Your work is automatically saved to browser storage
-- ✅ **Enhanced Validation**: Real-time feedback with visual indicators
-- ✅ **Error Boundaries**: Graceful recovery from unexpected errors
-- ✅ **Tooltips Everywhere**: Self-documenting interface
+### **Major Features:**
+- 📤 **Export/Import**: Save and share project configurations as JSON
+- 🔄 **CI/CD Generation**: Auto-generate GitHub Actions & Azure Pipelines
+- 🏷️ **Resource Tagging**: Enterprise governance with tag presets
+- 🎨 **Framework Templates**: 6 stack-specific templates (Next.js, .NET, Python, etc.)
+- ✅ **Best Practices Validation**: Catch issues before deployment
+- 📚 **Auto Documentation**: Generated READMEs and deployment scripts
 
-See [ENHANCEMENTS.md](./ENHANCEMENTS.md) for detailed feature documentation.
+### **From v0.2.0:**
+- ⚡ **Quick Start Templates**: 11 total (5 general + 6 framework-specific)
+- 🌍 **Regional Cost Comparison**: Save up to 30% by choosing the right region
+- ⌨️ **Keyboard Shortcuts**: Power-user navigation
+- 💾 **Auto-Save**: Never lose your work
+- 🎭 **Smooth Animations**: Premium UX
+
+See [RELEASE_v0.3.0.md](./RELEASE_v0.3.0.md) for complete release notes.
 
 ## 🚧 Roadmap
 

@@ -1,5 +1,7 @@
-import { X, Zap } from 'lucide-react';
+import { useState } from 'react';
+import { X, Zap, Code } from 'lucide-react';
 import { quickStartTemplates } from '../data/templates';
+import { frameworkTemplates } from '../data/frameworkTemplates';
 import { useProjectStore } from '../store/projectStore';
 import { cn } from '../utils/cn';
 
@@ -10,10 +12,11 @@ interface QuickStartModalProps {
 
 export default function QuickStartModal({ isOpen, onClose }: QuickStartModalProps) {
   const { loadTemplate, setCurrentStep } = useProjectStore();
+  const [activeTab, setActiveTab] = useState<'general' | 'framework'>('general');
 
   if (!isOpen) return null;
 
-  const handleSelectTemplate = (template: typeof quickStartTemplates[0]) => {
+  const handleSelectTemplate = (template: typeof quickStartTemplates[0] | typeof frameworkTemplates[0]) => {
     loadTemplate({ ...template.config, estimatedMonthlyCost: 0 });
     setCurrentStep(1); // Skip to resource selection
     onClose();
@@ -43,10 +46,45 @@ export default function QuickStartModal({ isOpen, onClose }: QuickStartModalProp
           </div>
         </div>
 
+        {/* Tabs */}
+        <div className="border-b border-slate-200 px-6">
+          <div className="flex space-x-1">
+            <button
+              onClick={() => setActiveTab('general')}
+              className={cn(
+                'px-4 py-3 font-semibold border-b-2 transition-colors',
+                activeTab === 'general'
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
+              )}
+            >
+              <div className="flex items-center space-x-2">
+                <Zap className="w-4 h-4" />
+                <span>General Templates</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('framework')}
+              className={cn(
+                'px-4 py-3 font-semibold border-b-2 transition-colors',
+                activeTab === 'framework'
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
+              )}
+            >
+              <div className="flex items-center space-x-2">
+                <Code className="w-4 h-4" />
+                <span>Framework-Specific</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
         {/* Templates Grid */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {quickStartTemplates.map((template) => (
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+          {activeTab === 'general' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {quickStartTemplates.map((template) => (
               <button
                 key={template.id}
                 onClick={() => handleSelectTemplate(template)}
@@ -102,7 +140,79 @@ export default function QuickStartModal({ isOpen, onClose }: QuickStartModalProp
                 </div>
               </button>
             ))}
-          </div>
+            </div>
+          )}
+
+          {activeTab === 'framework' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {frameworkTemplates.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => handleSelectTemplate(template)}
+                  className={cn(
+                    'p-6 border-2 rounded-xl text-left transition-all',
+                    'hover:border-primary-500 hover:shadow-lg hover:scale-105',
+                    'focus:outline-none focus:ring-2 focus:ring-primary-500'
+                  )}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="text-4xl">{template.icon}</div>
+                    <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-semibold">
+                      {template.framework}
+                    </span>
+                  </div>
+
+                  <h3 className="font-bold text-lg text-slate-900 mb-2">
+                    {template.name}
+                  </h3>
+                  <p className="text-sm text-slate-600 mb-4">{template.description}</p>
+
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {template.tags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-500">Resources:</span>
+                      <span className="font-semibold text-slate-700">
+                        {template.config.resources.length} services
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-500">Est. Cost:</span>
+                      <span className="font-semibold text-green-600">
+                        {template.estimatedCost}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-slate-200">
+                    <div className="flex flex-wrap gap-1">
+                      {template.config.resources.slice(0, 3).map((resource, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded"
+                        >
+                          {resource.displayName.split(' ')[0]}
+                        </span>
+                      ))}
+                      {template.config.resources.length > 3 && (
+                        <span className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded">
+                          +{template.config.resources.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Custom Start Option */}
           <div className="mt-6 p-6 bg-gradient-to-r from-slate-50 to-blue-50 border-2 border-dashed border-slate-300 rounded-xl">
