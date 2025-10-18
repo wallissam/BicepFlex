@@ -1,8 +1,8 @@
-import type { ProjectConfig } from '../types';
+import type { ProjectConfig } from '../types/index.js';
 
 export class CICDGenerator {
   generateGitHubActions(config: ProjectConfig): string {
-    const hasWebApp = config.resources.some(r => 
+    const hasWebApp = config.resources.some((r: any) => 
       ['staticWebApp', 'webApp', 'functionApp'].includes(r.type)
     );
 
@@ -69,7 +69,7 @@ ${buildSteps}
   }
 
   generateAzurePipelines(config: ProjectConfig): string {
-    const hasWebApp = config.resources.some(r => 
+    const hasWebApp = config.resources.some((r: any) => 
       ['staticWebApp', 'webApp', 'functionApp'].includes(r.type)
     );
 
@@ -169,7 +169,7 @@ stages:
   }
 
   generateDeploymentScript(config: ProjectConfig): string {
-    const hasWebApp = config.resources.some(r => 
+    const hasWebApp = config.resources.some((r: any) => 
       ['staticWebApp', 'webApp', 'functionApp'].includes(r.type)
     );
 
@@ -292,13 +292,13 @@ This configuration deploys the following Azure resources to **${config.region}**
 
 ${config.resources
   .map(
-    (r) =>
+    (r: any) =>
       `- **${r.displayName}** (${r.sku.tier} - ${r.sku.name})\n  ${r.name}`
   )
   .join('\n')}
 
 **Estimated Monthly Cost:** $${config.resources
-      .reduce((sum, r) => sum + (r.pricing?.estimatedMonthlyCost || 0), 0)
+      .reduce((sum: number, r: any) => sum + (r.pricing?.estimatedMonthlyCost || 0), 0)
       .toFixed(2)}
 
 ## 🛠️ Development Commands

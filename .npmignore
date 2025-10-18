@@ -1,0 +1,40 @@
+# Development files
+src/
+cli/
+.cursor/
+.github/
+node_modules/
+.git/
+
+# Config files
+.gitignore
+.eslintrc
+tsconfig.json
+tsconfig.node.json
+tsconfig.cli.json
+vite.config.ts
+tailwind.config.js
+postcss.config.js
+
+# Documentation that doesn't need to be in package
+DEVELOPMENT.md
+ENHANCEMENTS.md
+PR_SUMMARY.md
+PROJECT_SUMMARY.md
+RELEASE_v0.3.0.md
+WHATS_NEW.md
+DEPLOY_BICEPFLEX.md
+IMPLEMENTATION_SUMMARY.md
+AZURE_SOURCES.md
+
+# Build artifacts
+*.log
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+
+# Test files
+*.test.ts
+*.spec.ts

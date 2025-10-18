@@ -1,4 +1,4 @@
-import type { ResourceTemplate } from '../types';
+import type { ResourceTemplate } from '../types/index.js';
 
 export const resourceTemplates: Record<string, ResourceTemplate> = {
   webApp: {

@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "outDir": "./dist",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "strict": false,
+    "noImplicitAny": false
+  },
+  "include": [
+    "cli/**/*",
+    "src/services/**/*",
+    "src/data/**/*",
+    "src/types/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/components",
+    "src/hooks",
+    "src/store",
+    "src/App.tsx",
+    "src/main.tsx"
+  ]
+}

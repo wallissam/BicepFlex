@@ -1,4 +1,4 @@
-import type { ProjectConfig, ResourceConfig } from '../types';
+import type { ProjectConfig, ResourceConfig } from '../types/index.js';
 
 export interface ValidationIssue {
   severity: 'error' | 'warning' | 'info';
@@ -16,7 +16,7 @@ export class BestPracticesValidator {
     this.validateResourceCount(config, issues);
     
     // Resource-level validations
-    config.resources.forEach((resource) => {
+    config.resources.forEach((resource: ResourceConfig) => {
       this.validateResourceNaming(resource, issues);
       this.validateSKUSelection(resource, issues);
       this.validateDependencies(resource, config, issues);

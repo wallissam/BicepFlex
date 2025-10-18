@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AzureRetailPriceResponse, AzureRetailPrice, PricingInfo } from '../types';
+import type { AzureRetailPriceResponse, AzureRetailPrice, PricingInfo } from '../types/index.js';
 
 const AZURE_PRICING_API = 'https://prices.azure.com/api/retail/prices';
 
@@ -92,7 +92,7 @@ export class AzurePricingService {
       });
 
       const regions = new Set<string>();
-      response.data.Items.forEach(item => {
+      response.data.Items.forEach((item: any) => {
         if (item.armRegionName) {
           regions.add(item.armRegionName);
         }
