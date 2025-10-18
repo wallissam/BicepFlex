@@ -170,7 +170,7 @@ export function buildProjectConfig(answers: InitAnswers): ProjectConfig {
       outputLocation: framework === 'nextjs' ? '.next' : 'dist',
       apiLocation: '',
       language: 'javascript',
-      runtime: 'NODE|18'
+      runtime: 'NODE|20'
     },
     dependencies: []
   });

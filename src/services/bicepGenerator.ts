@@ -131,7 +131,7 @@ resource ${resource.name} 'Microsoft.Web/sites@2022-03-01' = {
     serverFarmId: ${resource.name}Plan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: '${resource.properties.runtime || 'NODE|18-lts'}'
+      linuxFxVersion: '${resource.properties.runtime || 'NODE|20-lts'}'
       alwaysOn: ${resource.sku.tier !== 'Free' && resource.sku.tier !== 'Shared'}
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
@@ -187,7 +187,7 @@ resource ${resource.name} 'Microsoft.Web/sites@2022-03-01' = {
     serverFarmId: ${resource.name}Plan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: '${resource.properties.runtime || 'NODE|18'}'
+      linuxFxVersion: '${resource.properties.runtime || 'NODE|20'}'
       appSettings: [
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'

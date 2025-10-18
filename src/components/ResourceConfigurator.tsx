@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { azurePricingService } from '../services/azurePricing';
 import type { AzureSKU } from '../types';
 import { DollarSign, Settings, ChevronDown, ChevronUp, ExternalLink, BookOpen, Lightbulb, Info } from 'lucide-react';
+import { getRuntimeConfig, syncFunctionAppRuntimes } from '../data/runtimeOptions';
 
 export default function ResourceConfigurator() {
   const { project, completeStep } = useProjectStore();
@@ -224,18 +225,65 @@ function ResourceConfigCard({
                 <span>Configuration</span>
               </h4>
               <div className="space-y-4">
-                {template.requiredProperties.map((prop) => (
-                  <div key={prop}>
-                    <label className="label text-sm">{formatPropertyName(prop)}</label>
-                    <input
-                      type="text"
-                      value={resource.properties[prop] || ''}
-                      onChange={(e) => handlePropertyChange(prop, e.target.value)}
-                      placeholder={getPropertyPlaceholder(prop, resource.type)}
-                      className="input"
-                    />
-                  </div>
-                ))}
+                {template.requiredProperties.map((prop) => {
+                  const runtimeConfig = getRuntimeConfig(resource.type, prop);
+                  
+                  // Render select dropdown for runtime properties
+                  if (runtimeConfig) {
+                    return (
+                      <div key={prop}>
+                        <label className="label text-sm flex items-center justify-between">
+                          <span>{runtimeConfig.displayName}</span>
+                          <a
+                            href={runtimeConfig.docsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+                          >
+                            <BookOpen className="w-3 h-3" />
+                            <span>View supported runtimes</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </label>
+                        <select
+                          value={resource.properties[prop] || runtimeConfig.defaultValue}
+                          onChange={(e) => {
+                            handlePropertyChange(prop, e.target.value);
+                            // Auto-sync workerRuntime for Function Apps
+                            if (resource.type === 'functionApp' && prop === 'runtime') {
+                              handlePropertyChange('workerRuntime', syncFunctionAppRuntimes(e.target.value));
+                            }
+                          }}
+                          className="input"
+                        >
+                          {runtimeConfig.options.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label} {option.supportStatus === 'LTS' && '(LTS)'} {option.supportStatus === 'Preview' && '(Preview)'}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {runtimeConfig.options.find(o => o.value === (resource.properties[prop] || runtimeConfig.defaultValue))?.description || 
+                           `Selected: ${resource.properties[prop] || runtimeConfig.defaultValue}`}
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  // Render text input for other properties
+                  return (
+                    <div key={prop}>
+                      <label className="label text-sm">{formatPropertyName(prop)}</label>
+                      <input
+                        type="text"
+                        value={resource.properties[prop] || ''}
+                        onChange={(e) => handlePropertyChange(prop, e.target.value)}
+                        placeholder={getPropertyPlaceholder(prop, resource.type)}
+                        className="input"
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -304,13 +352,6 @@ function formatPropertyName(prop: string): string {
 
 function getPropertyPlaceholder(prop: string, type: string): string {
   const placeholders: Record<string, Record<string, string>> = {
-    webApp: {
-      runtime: 'NODE|18-lts',
-    },
-    functionApp: {
-      runtime: 'NODE|18',
-      workerRuntime: 'node',
-    },
     staticWebApp: {
       appLocation: '/',
       outputLocation: 'dist',

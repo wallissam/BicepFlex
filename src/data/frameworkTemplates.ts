@@ -194,7 +194,7 @@ export const frameworkTemplates: FrameworkTemplate[] = [
           displayName: 'Web App (App Service)',
           sku: { name: 'B2', tier: 'Basic' },
           region: 'eastus',
-          properties: { runtime: 'NODE|18-lts' },
+          properties: { runtime: 'NODE|20-lts' },
           dependencies: ['sql', 'redis'],
         },
         {
