@@ -1,13 +1,30 @@
+import { useState, useEffect } from 'react';
 import { useProjectStore } from './store/projectStore';
 import ProjectBasics from './components/ProjectBasics';
 import ResourceSelector from './components/ResourceSelector';
 import ResourceConfigurator from './components/ResourceConfigurator';
 import ReviewAndGenerate from './components/ReviewAndGenerate';
 import StepIndicator from './components/StepIndicator';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import QuickStartModal from './components/QuickStartModal';
+import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
+import Tooltip from './components/Tooltip';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save } from 'lucide-react';
 
 function App() {
-  const { currentStep, steps, setCurrentStep } = useProjectStore();
+  const { currentStep, steps, setCurrentStep, resetProject, project } = useProjectStore();
+  const [showQuickStart, setShowQuickStart] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showSaveNotification, setShowSaveNotification] = useState(false);
+
+  // Show quick start on first visit
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('bicepflex-visited');
+    if (!hasVisited && !project.name) {
+      setShowQuickStart(true);
+      localStorage.setItem('bicepflex-visited', 'true');
+    }
+  }, [project.name]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -20,6 +37,26 @@ function App() {
       setCurrentStep(currentStep - 1);
     }
   };
+
+  const handleReset = () => {
+    if (confirm('Are you sure you want to reset your project? This cannot be undone.')) {
+      resetProject();
+    }
+  };
+
+  const handleSave = () => {
+    setShowSaveNotification(true);
+    setTimeout(() => setShowSaveNotification(false), 2000);
+  };
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    { key: 'ArrowRight', ctrlKey: true, description: 'Next step', action: handleNext },
+    { key: 'ArrowLeft', ctrlKey: true, description: 'Previous step', action: handleBack },
+    { key: 's', ctrlKey: true, description: 'Save', action: handleSave },
+    { key: 'r', ctrlKey: true, shiftKey: true, description: 'Reset', action: handleReset },
+    { key: '?', shiftKey: true, description: 'Help', action: () => setShowShortcuts(true) },
+  ]);
 
   const renderStep = () => {
     switch (steps[currentStep].id) {
@@ -38,16 +75,65 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Modals */}
+      <QuickStartModal isOpen={showQuickStart} onClose={() => setShowQuickStart(false)} />
+      <KeyboardShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
+
+      {/* Save Notification */}
+      {showSaveNotification && (
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2">
+            <Save className="w-5 h-5" />
+            <span className="font-semibold">Progress auto-saved!</span>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center space-x-3">
-            <div className="text-4xl">💪</div>
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">BicepFlex</h1>
-              <p className="text-slate-600 text-sm">
-                Trivialise your Azure infrastructure as code generation
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="text-4xl">💪</div>
+              <div>
+                <h1 className="text-3xl font-bold text-slate-900">BicepFlex</h1>
+                <p className="text-slate-600 text-sm">
+                  Trivialise your Azure infrastructure as code generation
+                </p>
+              </div>
+            </div>
+            
+            {/* Header Actions */}
+            <div className="flex items-center space-x-2">
+              <Tooltip content="Quick Start Templates">
+                <button
+                  onClick={() => setShowQuickStart(true)}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  aria-label="Quick Start"
+                >
+                  <Zap className="w-5 h-5 text-slate-600" />
+                </button>
+              </Tooltip>
+              
+              <Tooltip content="Keyboard Shortcuts (?)">
+                <button
+                  onClick={() => setShowShortcuts(true)}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  aria-label="Keyboard Shortcuts"
+                >
+                  <Keyboard className="w-5 h-5 text-slate-600" />
+                </button>
+              </Tooltip>
+              
+              <Tooltip content="Reset Project (Ctrl+Shift+R)">
+                <button
+                  onClick={handleReset}
+                  className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-600"
+                  aria-label="Reset Project"
+                >
+                  <RotateCcw className="w-5 h-5" />
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -76,23 +162,27 @@ function App() {
 
         {/* Navigation Buttons */}
         <div className="flex justify-between mt-6">
-          <button
-            onClick={handleBack}
-            disabled={currentStep === 0}
-            className="btn-secondary flex items-center space-x-2 disabled:opacity-50"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            <span>Back</span>
-          </button>
+          <Tooltip content="Ctrl + ← to go back">
+            <button
+              onClick={handleBack}
+              disabled={currentStep === 0}
+              className="btn-secondary flex items-center space-x-2 disabled:opacity-50"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              <span>Back</span>
+            </button>
+          </Tooltip>
 
           {currentStep < steps.length - 1 && (
-            <button
-              onClick={handleNext}
-              className="btn-primary flex items-center space-x-2"
-            >
-              <span>Next</span>
-              <ChevronRight className="w-5 h-5" />
-            </button>
+            <Tooltip content="Ctrl + → to continue">
+              <button
+                onClick={handleNext}
+                className="btn-primary flex items-center space-x-2"
+              >
+                <span>Next</span>
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </Tooltip>
           )}
         </div>
       </main>

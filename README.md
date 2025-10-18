@@ -9,6 +9,7 @@ BicepFlex is a beautiful, modern Single Page Application (SPA) that makes it dea
 
 ## ✨ Features
 
+### Core Functionality
 - 🎯 **Wizard-Based Interface**: Step-by-step guidance for infrastructure definition
 - 💰 **Real-Time Pricing**: Live cost estimates from Azure Retail Prices API
 - 🎨 **Modern UI**: Beautiful, responsive interface built with React + TailwindCSS
@@ -18,6 +19,16 @@ BicepFlex is a beautiful, modern Single Page Application (SPA) that makes it dea
 - 📁 **Complete Project Generation**: Creates all necessary files (Bicep, azure.yaml, config)
 - 🌍 **25+ Azure Regions**: Choose from all major Azure regions worldwide
 - ⚡ **Fast & Lightweight**: Built with Vite for lightning-fast dev experience
+
+### Premium Features
+- 🚀 **Quick Start Templates**: 5 pre-configured templates for common scenarios
+- 💾 **Auto-Save Progress**: LocalStorage persistence - never lose your work
+- ⌨️ **Keyboard Shortcuts**: Power-user navigation (Ctrl+Arrow, Ctrl+S, etc.)
+- 🌐 **Regional Cost Comparison**: Compare costs across up to 5 regions simultaneously
+- 💡 **Contextual Tooltips**: Helpful hints throughout the interface
+- 🎭 **Smooth Animations**: Professional micro-interactions and transitions
+- 🛡️ **Error Recovery**: Graceful error handling with recovery options
+- ✅ **Live Validation**: Real-time feedback on inputs with visual indicators
 
 ## 🚀 Quick Start
 
@@ -167,6 +178,18 @@ That's it! 🎉 Your infrastructure will be provisioned in Azure.
 - **Template Generation**: Create baseline templates for customization
 - **Team Onboarding**: Help new team members understand Azure options
 
+## 🎉 What's New (Latest Release)
+
+- ✅ **Quick Start Templates**: 5 ready-to-use templates for instant productivity
+- ✅ **Regional Cost Comparison**: Save up to 30% by choosing the right region
+- ✅ **Keyboard Shortcuts**: Navigate like a pro with Ctrl shortcuts
+- ✅ **Auto-Save**: Your work is automatically saved to browser storage
+- ✅ **Enhanced Validation**: Real-time feedback with visual indicators
+- ✅ **Error Boundaries**: Graceful recovery from unexpected errors
+- ✅ **Tooltips Everywhere**: Self-documenting interface
+
+See [ENHANCEMENTS.md](./ENHANCEMENTS.md) for detailed feature documentation.
+
 ## 🚧 Roadmap
 
 - [ ] Export to GitHub Actions / Azure Pipelines
@@ -178,6 +201,7 @@ That's it! 🎉 Your infrastructure will be provisioned in Azure.
 - [ ] Terraform output format
 - [ ] Template marketplace integration
 - [ ] Custom resource templates
+- [ ] Dark mode theme
 
 ## 🤝 Contributing
 

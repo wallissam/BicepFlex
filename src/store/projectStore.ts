@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { ProjectConfig, ResourceConfig, WizardStep } from '../types';
 
 interface ProjectStore {
@@ -15,6 +16,7 @@ interface ProjectStore {
   completeStep: (stepId: string) => void;
   resetProject: () => void;
   calculateTotalCost: () => number;
+  loadTemplate: (template: ProjectConfig) => void;
 }
 
 const initialSteps: WizardStep[] = [
@@ -51,77 +53,99 @@ const initialProject: ProjectConfig = {
   estimatedMonthlyCost: 0,
 };
 
-export const useProjectStore = create<ProjectStore>((set, get) => ({
-  project: initialProject,
-  currentStep: 0,
-  steps: initialSteps,
-
-  setProjectName: (name: string) => {
-    set((state) => ({
-      project: { ...state.project, name },
-    }));
-  },
-
-  setRegion: (region: string) => {
-    set((state) => ({
-      project: { ...state.project, region },
-    }));
-  },
-
-  addResource: (resource: ResourceConfig) => {
-    set((state) => ({
-      project: {
-        ...state.project,
-        resources: [...state.project.resources, resource],
-      },
-    }));
-  },
-
-  updateResource: (id: string, updates: Partial<ResourceConfig>) => {
-    set((state) => ({
-      project: {
-        ...state.project,
-        resources: state.project.resources.map((r) =>
-          r.id === id ? { ...r, ...updates } : r
-        ),
-      },
-    }));
-  },
-
-  removeResource: (id: string) => {
-    set((state) => ({
-      project: {
-        ...state.project,
-        resources: state.project.resources.filter((r) => r.id !== id),
-      },
-    }));
-  },
-
-  setCurrentStep: (step: number) => {
-    set({ currentStep: step });
-  },
-
-  completeStep: (stepId: string) => {
-    set((state) => ({
-      steps: state.steps.map((s) =>
-        s.id === stepId ? { ...s, completed: true } : s
-      ),
-    }));
-  },
-
-  resetProject: () => {
-    set({
+export const useProjectStore = create<ProjectStore>()(
+  persist(
+    (set, get) => ({
       project: initialProject,
       currentStep: 0,
       steps: initialSteps,
-    });
-  },
 
-  calculateTotalCost: () => {
-    const { project } = get();
-    return project.resources.reduce(
-      (total, resource) => total + (resource.pricing?.estimatedMonthlyCost || 0),
-      0
-    );
-  },
-}));
+      setProjectName: (name: string) => {
+        set((state) => ({
+          project: { ...state.project, name },
+        }));
+      },
+
+      setRegion: (region: string) => {
+        set((state) => ({
+          project: { ...state.project, region },
+        }));
+      },
+
+      addResource: (resource: ResourceConfig) => {
+        set((state) => ({
+          project: {
+            ...state.project,
+            resources: [...state.project.resources, resource],
+          },
+        }));
+      },
+
+      updateResource: (id: string, updates: Partial<ResourceConfig>) => {
+        set((state) => ({
+          project: {
+            ...state.project,
+            resources: state.project.resources.map((r) =>
+              r.id === id ? { ...r, ...updates } : r
+            ),
+          },
+        }));
+      },
+
+      removeResource: (id: string) => {
+        set((state) => ({
+          project: {
+            ...state.project,
+            resources: state.project.resources.filter((r) => r.id !== id),
+          },
+        }));
+      },
+
+      setCurrentStep: (step: number) => {
+        set({ currentStep: step });
+      },
+
+      completeStep: (stepId: string) => {
+        set((state) => ({
+          steps: state.steps.map((s) =>
+            s.id === stepId ? { ...s, completed: true } : s
+          ),
+        }));
+      },
+
+      resetProject: () => {
+        set({
+          project: initialProject,
+          currentStep: 0,
+          steps: initialSteps,
+        });
+      },
+
+      calculateTotalCost: () => {
+        const { project } = get();
+        return project.resources.reduce(
+          (total, resource) => total + (resource.pricing?.estimatedMonthlyCost || 0),
+          0
+        );
+      },
+
+      loadTemplate: (template: ProjectConfig) => {
+        set({
+          project: template,
+          currentStep: 0,
+          steps: initialSteps.map((s, idx) => ({
+            ...s,
+            completed: idx === 0 && template.name ? true : s.completed,
+          })),
+        });
+      },
+    }),
+    {
+      name: 'bicepflex-storage',
+      partialize: (state) => ({
+        project: state.project,
+        currentStep: state.currentStep,
+      }),
+    }
+  )
+);

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useProjectStore } from '../store/projectStore';
 import { bicepGenerator } from '../services/bicepGenerator';
-import { Download, Copy, Check, FileCode, DollarSign } from 'lucide-react';
+import RegionComparison from './RegionComparison';
+import { Download, Copy, Check, FileCode, DollarSign, Globe } from 'lucide-react';
 
 export default function ReviewAndGenerate() {
   const { project, completeStep } = useProjectStore();
   const [copied, setCopied] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<string>('infra/main.bicep');
+  const [showRegionComparison, setShowRegionComparison] = useState(false);
 
   const generatedFiles = bicepGenerator.generateInfrastructureFiles(project);
   const totalCost = project.resources.reduce(
@@ -55,6 +57,22 @@ export default function ReviewAndGenerate() {
           <div className="text-purple-100">Files Generated</div>
         </div>
       </div>
+
+      {/* Region Comparison Toggle */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={() => setShowRegionComparison(!showRegionComparison)}
+          className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-primary-200 rounded-lg hover:bg-primary-50 transition-colors"
+        >
+          <Globe className="w-5 h-5 text-primary-600" />
+          <span className="font-semibold text-primary-600">
+            {showRegionComparison ? 'Hide' : 'Show'} Regional Cost Comparison
+          </span>
+        </button>
+      </div>
+
+      {/* Regional Comparison */}
+      {showRegionComparison && <RegionComparison />}
 
       {/* Resources List */}
       <div className="card">

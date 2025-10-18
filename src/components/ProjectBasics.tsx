@@ -40,6 +40,14 @@ export default function ProjectBasics() {
       <div>
         <label htmlFor="projectName" className="label">
           Project Name
+          {localName && localName.length < 3 && (
+            <span className="ml-2 text-xs text-amber-600">
+              (minimum 3 characters)
+            </span>
+          )}
+          {localName && localName.length >= 3 && (
+            <span className="ml-2 text-xs text-green-600">✓ Valid</span>
+          )}
         </label>
         <input
           type="text"
@@ -47,13 +55,28 @@ export default function ProjectBasics() {
           value={localName}
           onChange={(e) => handleNameChange(e.target.value)}
           placeholder="my-awesome-app"
-          className="input"
+          className={`input ${
+            localName && localName.length < 3
+              ? 'border-amber-400 focus:ring-amber-500'
+              : localName
+              ? 'border-green-400 focus:ring-green-500'
+              : ''
+          }`}
           autoFocus
+          minLength={3}
+          maxLength={50}
         />
-        <p className="mt-2 text-sm text-slate-500">
-          This will be used as a prefix for your Azure resources. Use lowercase letters,
-          numbers, and hyphens only.
-        </p>
+        <div className="mt-2 flex items-start space-x-2">
+          <p className="text-sm text-slate-500 flex-1">
+            This will be used as a prefix for your Azure resources. Use lowercase letters,
+            numbers, and hyphens only.
+          </p>
+          {localName && (
+            <span className="text-xs text-slate-400 whitespace-nowrap">
+              {localName.length}/50
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Region Selection */}
