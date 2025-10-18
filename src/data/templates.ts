@@ -1,4 +1,4 @@
-import type { ProjectConfig } from '../types';
+import type { ProjectConfig } from '../types/index.js';
 
 export interface QuickStartTemplate {
   id: string;

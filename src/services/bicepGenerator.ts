@@ -1,4 +1,4 @@
-import type { ProjectConfig, ResourceConfig, BicepTemplate, AzdConfig } from '../types';
+import type { ProjectConfig, ResourceConfig, BicepTemplate, AzdConfig } from '../types/index.js';
 import YAML from 'yaml';
 
 export class BicepGenerator {
@@ -162,7 +162,7 @@ resource ${resource.name} 'Microsoft.Web/staticSites@2022-03-01' = {
   }
 
   private generateFunctionAppBicep(resource: ResourceConfig): string {
-    const storageDepName = resource.dependencies.find(d => d.includes('storage')) || 'storage';
+    const storageDepName = resource.dependencies.find((d: string) => d.includes('storage')) || 'storage';
     
     return `// App Service Plan for ${resource.displayName}
 resource ${resource.name}Plan 'Microsoft.Web/serverfarms@2022-03-01' = {
