@@ -236,11 +236,11 @@ export const frameworkTemplates: FrameworkTemplate[] = [
   },
   {
     id: 'react-spa',
-    name: 'React SPA',
-    description: 'React single-page application with CDN and storage',
+    name: 'React SPA (Vite)',
+    description: 'React + Vite SPA with build pipeline and CDN',
     icon: '⚛️',
-    framework: 'React',
-    tags: ['SPA', 'Static', 'CDN'],
+    framework: 'React + Vite',
+    tags: ['SPA', 'Vite', 'Static'],
     estimatedCost: '$5-15/mo',
     config: {
       name: 'my-react-app',
@@ -255,8 +255,9 @@ export const frameworkTemplates: FrameworkTemplate[] = [
           region: 'eastus',
           properties: {
             appLocation: '/',
-            outputLocation: 'build',
+            outputLocation: 'dist',
             apiLocation: '',
+            buildCommand: 'npm run build',
           },
           dependencies: [],
         },
