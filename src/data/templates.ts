@@ -29,7 +29,7 @@ export const quickStartTemplates: QuickStartTemplate[] = [
           displayName: 'Web App (App Service)',
           sku: { name: 'B1', tier: 'Basic' },
           region: 'eastus',
-          properties: { runtime: 'NODE|18-lts' },
+          properties: { runtime: 'NODE|20-lts' },
           dependencies: ['appinsights'],
         },
         {
@@ -63,7 +63,7 @@ export const quickStartTemplates: QuickStartTemplate[] = [
           displayName: 'Function App',
           sku: { name: 'Y1', tier: 'Dynamic' },
           region: 'eastus',
-          properties: { runtime: 'NODE|18', workerRuntime: 'node' },
+          properties: { runtime: 'NODE|20', workerRuntime: 'node' },
           dependencies: ['storage', 'appinsights'],
         },
         {
@@ -117,7 +117,7 @@ export const quickStartTemplates: QuickStartTemplate[] = [
           displayName: 'Function App',
           sku: { name: 'EP1', tier: 'ElasticPremium' },
           region: 'eastus',
-          properties: { runtime: 'NODE|18', workerRuntime: 'node' },
+          properties: { runtime: 'NODE|20', workerRuntime: 'node' },
           dependencies: ['storage', 'cosmos'],
         },
         {
