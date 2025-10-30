@@ -305,9 +305,10 @@ bicepflex --help
 
 ## 📚 Documentation
 
-- **CLI Guide**: [CLI_GUIDE.md](./CLI_GUIDE.md)
-- **Deployment Guide**: [DEPLOY_BICEPFLEX.md](./DEPLOY_BICEPFLEX.md)
-- **Development**: [DEVELOPMENT.md](./DEVELOPMENT.md)
+- **CLI Guide**: [docs/CLI_GUIDE.md](./docs/CLI_GUIDE.md)
+- **Deployment Guide**: [docs/DEPLOY_BICEPFLEX.md](./docs/DEPLOY_BICEPFLEX.md)
+- **Development**: [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)
+- **Azure Data Sources**: [docs/AZURE_SOURCES.md](./docs/AZURE_SOURCES.md)
 
 ## 🤝 Contributing
 
