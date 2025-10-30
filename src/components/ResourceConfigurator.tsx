@@ -3,7 +3,7 @@ import { useProjectStore } from '../store/projectStore';
 import { resourceTemplates, serviceNameMapping } from '../data/resourceTemplates';
 import { useQuery } from '@tanstack/react-query';
 import { azurePricingService } from '../services/azurePricing';
-import type { AzureSKU } from '../types';
+import type { AzureSKU, ResourceConfig } from '../types';
 import { DollarSign, Settings, ChevronDown, ChevronUp, ExternalLink, BookOpen, Lightbulb, Info } from 'lucide-react';
 import { getRuntimeConfig, syncFunctionAppRuntimes } from '../data/runtimeOptions';
 
@@ -66,7 +66,7 @@ function ResourceConfigCard({
   expanded,
   onToggle,
 }: {
-  resource: any;
+  resource: ResourceConfig;
   expanded: boolean;
   onToggle: () => void;
 }) {
@@ -89,7 +89,7 @@ function ResourceConfigCard({
     updateResource(resource.id, { sku, pricing });
   };
 
-  const handlePropertyChange = (key: string, value: any) => {
+  const handlePropertyChange = (key: string, value: string | number | boolean) => {
     updateResource(resource.id, {
       properties: { ...resource.properties, [key]: value },
     });
@@ -246,7 +246,7 @@ function ResourceConfigCard({
                           </a>
                         </label>
                         <select
-                          value={resource.properties[prop] || runtimeConfig.defaultValue}
+                          value={String(resource.properties[prop] || runtimeConfig.defaultValue)}
                           onChange={(e) => {
                             handlePropertyChange(prop, e.target.value);
                             // Auto-sync workerRuntime for Function Apps
@@ -276,7 +276,7 @@ function ResourceConfigCard({
                       <label className="label text-sm">{formatPropertyName(prop)}</label>
                       <input
                         type="text"
-                        value={resource.properties[prop] || ''}
+                        value={String(resource.properties[prop] || '')}
                         onChange={(e) => handlePropertyChange(prop, e.target.value)}
                         placeholder={getPropertyPlaceholder(prop, resource.type)}
                         className="input"

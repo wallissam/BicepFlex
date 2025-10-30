@@ -92,7 +92,7 @@ export class AzurePricingService {
       });
 
       const regions = new Set<string>();
-      response.data.Items.forEach((item: any) => {
+      response.data.Items.forEach((item: AzureRetailPrice) => {
         if (item.armRegionName) {
           regions.add(item.armRegionName);
         }

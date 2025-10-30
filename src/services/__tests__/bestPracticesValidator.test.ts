@@ -12,6 +12,7 @@ describe('BestPracticesValidator', () => {
         region: 'eastus',
         resources: [],
         cicd: 'github',
+        estimatedMonthlyCost: 0,
       };
 
       const issues = validator.validate(config);
@@ -27,6 +28,7 @@ describe('BestPracticesValidator', () => {
         region: 'eastus',
         resources: [],
         cicd: 'github',
+        estimatedMonthlyCost: 0,
       };
 
       const issues = validator.validate(config);
@@ -44,6 +46,7 @@ describe('BestPracticesValidator', () => {
         region: 'eastus',
         resources: [],
         cicd: 'github',
+        estimatedMonthlyCost: 0,
       };
 
       const issues = validator.validate(config);
@@ -62,11 +65,13 @@ describe('BestPracticesValidator', () => {
           name: 'test-resource',
           displayName: 'Test',
           type: 'webApp',
+            region: 'eastus',
           sku: { name: 'B1', tier: 'Basic' },
           properties: {},
           dependencies: [],
         }),
         cicd: 'github',
+        estimatedMonthlyCost: 0,
       };
 
       const issues = validator.validate(config);
@@ -88,12 +93,14 @@ describe('BestPracticesValidator', () => {
             name: 'prod-webapp',
             displayName: 'Production Web App',
             type: 'webApp',
+            region: 'eastus',
             sku: { name: 'F1', tier: 'Free' },
             properties: {},
             dependencies: [],
           },
         ],
         cicd: 'github',
+        estimatedMonthlyCost: 0,
       };
 
       const issues = validator.validate(config);
@@ -113,6 +120,7 @@ describe('BestPracticesValidator', () => {
             name: 'test-sql',
             displayName: 'Test SQL',
             type: 'sqlDatabase',
+            region: 'eastus',
             sku: { name: 'Basic', tier: 'Basic' },
             properties: {
               adminPassword: 'P@ssw0rd123!',
@@ -121,6 +129,7 @@ describe('BestPracticesValidator', () => {
           },
         ],
         cicd: 'github',
+        estimatedMonthlyCost: 0,
       };
 
       const issues = validator.validate(config);
@@ -142,12 +151,14 @@ describe('BestPracticesValidator', () => {
             name: 'test-webapp',
             displayName: 'Test Web App',
             type: 'webApp',
+            region: 'eastus',
             sku: { name: 'B1', tier: 'Basic' },
             properties: {},
             dependencies: [],
           },
         ],
         cicd: 'github',
+        estimatedMonthlyCost: 0,
       };
 
       const issues = validator.validate(config);
@@ -167,6 +178,7 @@ describe('BestPracticesValidator', () => {
             name: 'test-webapp',
             displayName: 'Test Web App',
             type: 'webApp',
+            region: 'eastus',
             sku: { name: 'B1', tier: 'Basic' },
             properties: {},
             dependencies: [],
@@ -176,12 +188,14 @@ describe('BestPracticesValidator', () => {
             name: 'test-insights',
             displayName: 'Test Insights',
             type: 'appInsights',
+            region: 'eastus',
             sku: { name: 'Standard', tier: 'Standard' },
             properties: {},
             dependencies: [],
           },
         ],
         cicd: 'github',
+        estimatedMonthlyCost: 0,
       };
 
       const issues = validator.validate(config);

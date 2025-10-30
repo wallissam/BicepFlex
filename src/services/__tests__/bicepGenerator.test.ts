@@ -11,7 +11,8 @@ describe('BicepGenerator', () => {
         name: 'test-project',
         region: 'eastus',
         resources: [],
-        cicd: 'github',
+        cicd: "github",
+        estimatedMonthlyCost: 0,
       };
 
       const result = generator.generateBicepTemplate(config);
@@ -33,14 +34,17 @@ describe('BicepGenerator', () => {
             name: 'mywebapp',
             displayName: 'My Web App',
             type: 'webApp',
+            region: 'eastus',
             sku: {
               name: 'B1',
               tier: 'Basic',
             },
             properties: {},
+            dependencies: [],
           },
         ],
-        cicd: 'github',
+        cicd: "github",
+        estimatedMonthlyCost: 0,
       };
 
       const result = generator.generateBicepTemplate(config);
@@ -55,7 +59,8 @@ describe('BicepGenerator', () => {
         name: 'test-project',
         region: 'eastus',
         resources: [],
-        cicd: 'github',
+        cicd: "github",
+        estimatedMonthlyCost: 0,
       };
 
       const tags = [
@@ -82,14 +87,17 @@ describe('BicepGenerator', () => {
             name: 'mywebapp',
             displayName: 'My Web App',
             type: 'webApp',
+            region: 'eastus',
             sku: {
               name: 'B1',
               tier: 'Basic',
             },
             properties: {},
+            dependencies: [],
           },
         ],
-        cicd: 'github',
+        cicd: "github",
+        estimatedMonthlyCost: 0,
       };
 
       const files = generator.generateInfrastructureFiles(config);
