@@ -6,7 +6,9 @@ import RegionComparison from './RegionComparison';
 import TagManager from './TagManager';
 import CostAlert from './CostAlert';
 import DeploymentReadinessChecklist from './DeploymentReadinessChecklist';
-import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles } from 'lucide-react';
+import QuickCopyCommands from './QuickCopyCommands';
+import { downloadWithSetupScript } from '../utils/downloadHelpers';
+import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles, Package } from 'lucide-react';
 import type { ResourceTag } from '../types/tags';
 
 export default function ReviewAndGenerate() {
@@ -15,6 +17,7 @@ export default function ReviewAndGenerate() {
   const [selectedFile, setSelectedFile] = useState<string>('infra/main.bicep');
   const [showRegionComparison, setShowRegionComparison] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
+  const [showCommands, setShowCommands] = useState(false);
   const [includeCICD, setIncludeCICD] = useState(true);
   const [cicdPlatform, setCICDPlatform] = useState<'github' | 'azure'>('github');
   const [tags, setTags] = useState<ResourceTag[]>([]);
@@ -54,6 +57,11 @@ export default function ReviewAndGenerate() {
       a.click();
       URL.revokeObjectURL(url);
     });
+    completeStep('review');
+  };
+
+  const handleDownloadAsPackage = () => {
+    downloadWithSetupScript(generatedFiles, project.name || 'bicepflex-project');
     completeStep('review');
   };
 
@@ -134,26 +142,36 @@ export default function ReviewAndGenerate() {
       <div className="flex flex-wrap gap-3 mb-4">
         <button
           onClick={() => setShowRegionComparison(!showRegionComparison)}
-          className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-primary-200 rounded-lg hover:bg-primary-50 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-primary-200 dark:border-primary-700 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
         >
-          <Globe className="w-5 h-5 text-primary-600" />
-          <span className="font-semibold text-primary-600">
+          <Globe className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+          <span className="font-semibold text-primary-600 dark:text-primary-400">
             {showRegionComparison ? 'Hide' : 'Show'} Regional Comparison
           </span>
         </button>
 
         <button
-          onClick={() => setShowTagManager(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-purple-200 rounded-lg hover:bg-purple-50 transition-colors"
+          onClick={() => setShowCommands(!showCommands)}
+          className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-green-200 dark:border-green-700 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
         >
-          <Tag className="w-5 h-5 text-purple-600" />
-          <span className="font-semibold text-purple-600">
+          <Copy className="w-5 h-5 text-green-600 dark:text-green-400" />
+          <span className="font-semibold text-green-600 dark:text-green-400">
+            {showCommands ? 'Hide' : 'Show'} Quick Commands
+          </span>
+        </button>
+
+        <button
+          onClick={() => setShowTagManager(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-purple-200 dark:border-purple-700 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+        >
+          <Tag className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          <span className="font-semibold text-purple-600 dark:text-purple-400">
             Manage Tags {tags.length > 0 && `(${tags.length})`}
           </span>
         </button>
 
-        <div className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-slate-200 rounded-lg">
-          <GitBranch className="w-5 h-5 text-slate-600" />
+        <div className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-lg">
+          <GitBranch className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           <label className="flex items-center space-x-2 cursor-pointer">
             <input
               type="checkbox"
@@ -161,7 +179,7 @@ export default function ReviewAndGenerate() {
               onChange={(e) => setIncludeCICD(e.target.checked)}
               className="rounded"
             />
-            <span className="font-semibold text-slate-700">Include CI/CD</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Include CI/CD</span>
           </label>
           {includeCICD && (
             <select
@@ -176,17 +194,24 @@ export default function ReviewAndGenerate() {
         </div>
       </div>
 
+      {/* Quick Copy Commands */}
+      {showCommands && (
+        <div className="mb-6">
+          <QuickCopyCommands project={project} />
+        </div>
+      )}
+
       {/* Regional Comparison */}
       {showRegionComparison && <RegionComparison />}
 
       {/* Resources List */}
       <div className="card">
-        <h3 className="font-semibold text-lg mb-4">Your Resources</h3>
+        <h3 className="font-semibold text-lg mb-4 text-slate-900 dark:text-white">Your Resources</h3>
         <div className="space-y-2">
           {project.resources.map((resource) => (
             <div
               key={resource.id}
-              className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+              className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg"
             >
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">{resource.displayName.split(' ')[0]}</span>
@@ -218,25 +243,31 @@ export default function ReviewAndGenerate() {
               <FileCode className="w-5 h-5" />
               <span>Generated Files</span>
             </h3>
-            <p className="text-sm text-slate-600 mt-1">
-              All Bicep files use parameters for flexibility. Customize values via <code className="px-1 py-0.5 bg-slate-100 rounded text-xs">main.parameters.json</code> or at deployment time.
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              All Bicep files use parameters for flexibility. Customize values via <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-xs">main.parameters.json</code> or at deployment time.
             </p>
           </div>
-          <button onClick={handleDownloadAll} className="btn-primary flex items-center space-x-2">
-            <Download className="w-5 h-5" />
-            <span>Download All</span>
-          </button>
+          <div className="flex gap-2">
+            <button onClick={handleDownloadAll} className="btn-secondary flex items-center space-x-2">
+              <Download className="w-5 h-5" />
+              <span>Download All</span>
+            </button>
+            <button onClick={handleDownloadAsPackage} className="btn-primary flex items-center space-x-2">
+              <Package className="w-5 h-5" />
+              <span>Download as Package</span>
+            </button>
+          </div>
         </div>
 
         {/* File Descriptions */}
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-semibold text-blue-900 mb-2 flex items-center space-x-2">
+        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center space-x-2">
             <Info className="w-4 h-4" />
             <span>Understanding the Generated Files</span>
           </h4>
-          <div className="space-y-2 text-sm text-blue-800">
+          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
             <div className="flex items-start space-x-2">
-              <span className="font-mono text-xs bg-blue-100 px-2 py-1 rounded mt-0.5">infra/main.bicep</span>
+              <span className="font-mono text-xs bg-blue-100 dark:bg-blue-900/40 px-2 py-1 rounded mt-0.5">infra/main.bicep</span>
               <span>Core infrastructure definition with all Azure resources</span>
             </div>
             <div className="flex items-start space-x-2">
