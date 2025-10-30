@@ -12,6 +12,7 @@ import ExportImport from './components/ExportImport';
 import BicepHelpModal from './components/BicepHelpModal';
 import Tooltip from './components/Tooltip';
 import ValidationPanel from './components/ValidationPanel';
+import AutoSaveIndicator from './components/AutoSaveIndicator';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save, FileJson, BookOpen, Moon, Sun } from 'lucide-react';
 
@@ -87,6 +88,9 @@ function App() {
       <KeyboardShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <ExportImport isOpen={showExportImport} onClose={() => setShowExportImport(false)} />
       <BicepHelpModal isOpen={showBicepHelp} onClose={() => setShowBicepHelp(false)} />
+
+      {/* Auto-Save Indicator */}
+      <AutoSaveIndicator />
 
       {/* Save Notification */}
       {showSaveNotification && (

@@ -6,6 +6,7 @@ import { azurePricingService } from '../services/azurePricing';
 import type { AzureSKU, ResourceConfig } from '../types';
 import { DollarSign, Settings, ChevronDown, ChevronUp, ExternalLink, BookOpen, Lightbulb, Info } from 'lucide-react';
 import { getRuntimeConfig, syncFunctionAppRuntimes } from '../data/runtimeOptions';
+import ResourceNamingHelper from './ResourceNamingHelper';
 
 export default function ResourceConfigurator() {
   const { project, completeStep } = useProjectStore();
@@ -179,6 +180,11 @@ function ResourceConfigCard({
               value={resource.name}
               onChange={(e) => updateResource(resource.id, { name: e.target.value })}
               className="input"
+            />
+            <ResourceNamingHelper 
+              resourceType={resource.type}
+              currentName={resource.name}
+              onNameGenerated={(name) => updateResource(resource.id, { name })}
             />
           </div>
 

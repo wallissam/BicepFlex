@@ -5,6 +5,7 @@ import { cicdGenerator } from '../services/cicdGenerator';
 import RegionComparison from './RegionComparison';
 import TagManager from './TagManager';
 import CostAlert from './CostAlert';
+import DeploymentReadinessChecklist from './DeploymentReadinessChecklist';
 import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles } from 'lucide-react';
 import type { ResourceTag } from '../types/tags';
 
@@ -117,6 +118,9 @@ export default function ReviewAndGenerate() {
           <div className="text-purple-100">Files Generated</div>
         </div>
       </div>
+
+      {/* Deployment Readiness Checklist */}
+      <DeploymentReadinessChecklist />
 
       {/* Modals */}
       <TagManager 
