@@ -16,16 +16,8 @@ vite.config.ts
 tailwind.config.js
 postcss.config.js
 
-# Documentation that doesn't need to be in package
-DEVELOPMENT.md
-ENHANCEMENTS.md
-PR_SUMMARY.md
-PROJECT_SUMMARY.md
-RELEASE_v0.3.0.md
-WHATS_NEW.md
-DEPLOY_BICEPFLEX.md
-IMPLEMENTATION_SUMMARY.md
-AZURE_SOURCES.md
+# Documentation (kept for npm package users)
+# docs/ directory will be included
 
 # Build artifacts
 *.log
