@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useProjectStore } from './store/projectStore';
+import { useTheme } from './hooks/useTheme';
 import ProjectBasics from './components/ProjectBasics';
 import ResourceSelector from './components/ResourceSelector';
 import ResourceConfigurator from './components/ResourceConfigurator';
@@ -10,11 +11,13 @@ import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
 import ExportImport from './components/ExportImport';
 import BicepHelpModal from './components/BicepHelpModal';
 import Tooltip from './components/Tooltip';
+import ValidationPanel from './components/ValidationPanel';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save, FileJson, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save, FileJson, BookOpen, Moon, Sun } from 'lucide-react';
 
 function App() {
   const { currentStep, steps, setCurrentStep, resetProject, project } = useProjectStore();
+  const { theme, toggleTheme } = useTheme();
   const [showQuickStart, setShowQuickStart] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showExportImport, setShowExportImport] = useState(false);
@@ -78,7 +81,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
       {/* Modals */}
       <QuickStartModal isOpen={showQuickStart} onClose={() => setShowQuickStart(false)} />
       <KeyboardShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
@@ -96,14 +99,14 @@ function App() {
       )}
 
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm">
+      <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="text-4xl">💪</div>
               <div>
-                <h1 className="text-3xl font-bold text-slate-900">BicepFlex</h1>
-                <p className="text-slate-600 text-sm">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">BicepFlex</h1>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">
                   Trivialise your Azure infrastructure as code generation
                 </p>
               </div>
@@ -111,50 +114,64 @@ function App() {
             
             {/* Header Actions */}
             <div className="flex items-center space-x-2">
+              <Tooltip content={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}>
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  aria-label="Toggle Theme"
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="w-5 h-5 text-slate-400" />
+                  ) : (
+                    <Moon className="w-5 h-5 text-slate-600" />
+                  )}
+                </button>
+              </Tooltip>
+              
               <Tooltip content="Learn About Bicep">
                 <button
                   onClick={() => setShowBicepHelp(true)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                   aria-label="Bicep Help"
                 >
-                  <BookOpen className="w-5 h-5 text-slate-600" />
+                  <BookOpen className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 </button>
               </Tooltip>
               
               <Tooltip content="Quick Start Templates">
                 <button
                   onClick={() => setShowQuickStart(true)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                   aria-label="Quick Start"
                 >
-                  <Zap className="w-5 h-5 text-slate-600" />
+                  <Zap className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 </button>
               </Tooltip>
               
               <Tooltip content="Export/Import Project">
                 <button
                   onClick={() => setShowExportImport(true)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                   aria-label="Export/Import"
                 >
-                  <FileJson className="w-5 h-5 text-slate-600" />
+                  <FileJson className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 </button>
               </Tooltip>
               
               <Tooltip content="Keyboard Shortcuts (?)">
                 <button
                   onClick={() => setShowShortcuts(true)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                   aria-label="Keyboard Shortcuts"
                 >
-                  <Keyboard className="w-5 h-5 text-slate-600" />
+                  <Keyboard className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 </button>
               </Tooltip>
               
               <Tooltip content="Reset Project (Ctrl+Shift+R)">
                 <button
                   onClick={handleReset}
-                  className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-600"
+                  className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-red-600 dark:text-red-400"
                   aria-label="Reset Project"
                 >
                   <RotateCcw className="w-5 h-5" />
@@ -167,6 +184,13 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Validation Panel - shown after step 1 */}
+        {currentStep >= 1 && project.resources.length > 0 && (
+          <div className="mb-6">
+            <ValidationPanel />
+          </div>
+        )}
+        
         {/* Step Indicator */}
         <div className="mb-8">
           <StepIndicator />
@@ -175,10 +199,10 @@ function App() {
         {/* Step Content */}
         <div className="card min-h-[500px]">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-slate-900">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
               {steps[currentStep].title}
             </h2>
-            <p className="text-slate-600 mt-1">
+            <p className="text-slate-600 dark:text-slate-400 mt-1">
               {steps[currentStep].description}
             </p>
           </div>
@@ -214,25 +238,25 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-16 py-8 border-t border-slate-200 bg-white">
+      <footer className="mt-16 py-8 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
             <div>
-              <h3 className="font-semibold text-slate-900 mb-3">About BicepFlex</h3>
-              <p className="text-sm text-slate-600">
+              <h3 className="font-semibold text-slate-900 dark:text-white mb-3">About BicepFlex</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 Generate production-ready Azure Bicep templates with best practices built-in.
                 All templates are fully customizable and follow Azure recommendations.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 mb-3">Learn More</h3>
+              <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Learn More</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
                     href="https://learn.microsoft.com/azure/azure-resource-manager/bicep/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-700"
+                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                   >
                     Bicep Documentation
                   </a>
@@ -242,7 +266,7 @@ function App() {
                     href="https://learn.microsoft.com/azure/developer/azure-developer-cli/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-700"
+                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                   >
                     Azure Developer CLI
                   </a>
@@ -252,7 +276,7 @@ function App() {
                     href="https://learn.microsoft.com/azure/azure-resource-manager/bicep/best-practices"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-700"
+                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                   >
                     Bicep Best Practices
                   </a>
@@ -260,14 +284,14 @@ function App() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 mb-3">Resources</h3>
+              <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Resources</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
                     href="https://learn.microsoft.com/azure/templates/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-700"
+                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                   >
                     Azure Template Reference
                   </a>
@@ -277,7 +301,7 @@ function App() {
                     href="https://prices.azure.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-700"
+                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                   >
                     Azure Pricing API
                   </a>
@@ -287,7 +311,7 @@ function App() {
                     href="https://learn.microsoft.com/azure/architecture/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-700"
+                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                   >
                     Azure Architecture Center
                   </a>
@@ -295,14 +319,14 @@ function App() {
               </ul>
             </div>
           </div>
-          <div className="pt-6 border-t border-slate-200 text-center text-slate-600 text-sm">
+          <div className="pt-6 border-t border-slate-200 dark:border-slate-700 text-center text-slate-600 dark:text-slate-400 text-sm">
             <p>
               Built with ❤️ for the Azure community • Powered by{' '}
               <a
                 href="https://azure.github.io/azure-dev/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary-600 hover:text-primary-700 font-semibold"
+                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold"
               >
                 Azure Developer CLI
               </a>

@@ -4,6 +4,7 @@ import { bicepGenerator } from '../services/bicepGenerator';
 import { cicdGenerator } from '../services/cicdGenerator';
 import RegionComparison from './RegionComparison';
 import TagManager from './TagManager';
+import CostAlert from './CostAlert';
 import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles } from 'lucide-react';
 import type { ResourceTag } from '../types/tags';
 
@@ -59,13 +60,16 @@ export default function ReviewAndGenerate() {
 
   return (
     <div className="space-y-6">
+      {/* Cost Alert */}
+      <CostAlert totalCost={totalCost} resources={project.resources} />
+      
       {/* Help Banner */}
-      <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-lg p-4">
+      <div className="bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg p-4">
         <div className="flex items-start space-x-3">
-          <Sparkles className="w-5 h-5 text-cyan-600 mt-0.5 flex-shrink-0" />
+          <Sparkles className="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <h4 className="font-semibold text-cyan-900 mb-1">Your Infrastructure as Code is Ready!</h4>
-            <p className="text-sm text-cyan-800 mb-2">
+            <h4 className="font-semibold text-cyan-900 dark:text-cyan-100 mb-1">Your Infrastructure as Code is Ready!</h4>
+            <p className="text-sm text-cyan-800 dark:text-cyan-200 mb-2">
               We've generated production-ready Bicep templates with best practices built-in. All resources are parameterized,
               making it easy to customize for different environments. The templates include proper dependencies, security settings, and Azure CLI deployment scripts.
             </p>
@@ -74,7 +78,7 @@ export default function ReviewAndGenerate() {
                 href="https://learn.microsoft.com/azure/azure-resource-manager/bicep/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-1 text-sm text-cyan-700 hover:text-cyan-900 font-medium"
+                className="inline-flex items-center space-x-1 text-sm text-cyan-700 dark:text-cyan-300 hover:text-cyan-900 dark:hover:text-cyan-100 font-medium"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Bicep Documentation</span>
@@ -84,7 +88,7 @@ export default function ReviewAndGenerate() {
                 href="https://learn.microsoft.com/azure/developer/azure-developer-cli/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-1 text-sm text-cyan-700 hover:text-cyan-900 font-medium"
+                className="inline-flex items-center space-x-1 text-sm text-cyan-700 dark:text-cyan-300 hover:text-cyan-900 dark:hover:text-cyan-100 font-medium"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Azure Developer CLI (azd)</span>
