@@ -7,6 +7,7 @@ import TagManager from './TagManager';
 import CostAlert from './CostAlert';
 import DeploymentReadinessChecklist from './DeploymentReadinessChecklist';
 import QuickCopyCommands from './QuickCopyCommands';
+import ResourceSearchFilter from './ResourceSearchFilter';
 import { downloadWithSetupScript } from '../utils/downloadHelpers';
 import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles, Package } from 'lucide-react';
 import type { ResourceTag } from '../types/tags';
@@ -204,36 +205,8 @@ export default function ReviewAndGenerate() {
       {/* Regional Comparison */}
       {showRegionComparison && <RegionComparison />}
 
-      {/* Resources List */}
-      <div className="card">
-        <h3 className="font-semibold text-lg mb-4 text-slate-900 dark:text-white">Your Resources</h3>
-        <div className="space-y-2">
-          {project.resources.map((resource) => (
-            <div
-              key={resource.id}
-              className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg"
-            >
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">{resource.displayName.split(' ')[0]}</span>
-                <div>
-                  <p className="font-medium">{resource.displayName}</p>
-                  <p className="text-sm text-slate-500">
-                    {resource.sku.tier} - {resource.sku.name}
-                  </p>
-                </div>
-              </div>
-              {resource.pricing && (
-                <div className="text-right">
-                  <div className="flex items-center space-x-1 text-green-600 font-semibold">
-                    <DollarSign className="w-4 h-4" />
-                    <span>${resource.pricing.estimatedMonthlyCost.toFixed(2)}/mo</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Resource Search & Filter */}
+      <ResourceSearchFilter />
 
       {/* Generated Files */}
       <div className="card">

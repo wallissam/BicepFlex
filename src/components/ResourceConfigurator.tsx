@@ -7,6 +7,7 @@ import type { AzureSKU, ResourceConfig } from '../types';
 import { DollarSign, Settings, ChevronDown, ChevronUp, ExternalLink, BookOpen, Lightbulb, Info } from 'lucide-react';
 import { getRuntimeConfig, syncFunctionAppRuntimes } from '../data/runtimeOptions';
 import ResourceNamingHelper from './ResourceNamingHelper';
+import CostComparison from './CostComparison';
 
 export default function ResourceConfigurator() {
   const { project, completeStep } = useProjectStore();
@@ -221,6 +222,13 @@ function ResourceConfigCard({
                 );
               })}
             </div>
+            
+            {/* Cost Comparison */}
+            <CostComparison
+              resource={resource}
+              availableSKUs={template.defaultSKUs}
+              onSKUChange={(sku) => updateResource(resource.id, { sku })}
+            />
           </div>
 
           {/* Resource-specific properties */}

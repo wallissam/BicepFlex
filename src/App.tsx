@@ -13,8 +13,10 @@ import BicepHelpModal from './components/BicepHelpModal';
 import Tooltip from './components/Tooltip';
 import ValidationPanel from './components/ValidationPanel';
 import AutoSaveIndicator from './components/AutoSaveIndicator';
+import BestPracticesScorecard from './components/BestPracticesScorecard';
+import TemplateLibrary from './components/TemplateLibrary';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save, FileJson, BookOpen, Moon, Sun } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Zap, Keyboard, RotateCcw, Save, FileJson, BookOpen, Moon, Sun, Rocket } from 'lucide-react';
 
 function App() {
   const { currentStep, steps, setCurrentStep, resetProject, project } = useProjectStore();
@@ -23,6 +25,7 @@ function App() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showExportImport, setShowExportImport] = useState(false);
   const [showBicepHelp, setShowBicepHelp] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
 
   // Show quick start on first visit
@@ -88,6 +91,7 @@ function App() {
       <KeyboardShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <ExportImport isOpen={showExportImport} onClose={() => setShowExportImport(false)} />
       <BicepHelpModal isOpen={showBicepHelp} onClose={() => setShowBicepHelp(false)} />
+      <TemplateLibrary isOpen={showTemplates} onClose={() => setShowTemplates(false)} />
 
       {/* Auto-Save Indicator */}
       <AutoSaveIndicator />
@@ -142,7 +146,17 @@ function App() {
                 </button>
               </Tooltip>
               
-              <Tooltip content="Quick Start Templates">
+              <Tooltip content="Project Templates">
+                <button
+                  onClick={() => setShowTemplates(true)}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  aria-label="Templates"
+                >
+                  <Rocket className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                </button>
+              </Tooltip>
+              
+              <Tooltip content="Quick Start">
                 <button
                   onClick={() => setShowQuickStart(true)}
                   className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
@@ -188,6 +202,13 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Best Practices Scorecard - shown after step 1 */}
+        {currentStep >= 1 && project.resources.length > 0 && (
+          <div className="mb-6">
+            <BestPracticesScorecard />
+          </div>
+        )}
+        
         {/* Validation Panel - shown after step 1 */}
         {currentStep >= 1 && project.resources.length > 0 && (
           <div className="mb-6">
