@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { BicepGenerator } from '../bicepGenerator';
-import type { ProjectConfig } from '../../types';
+import { BicepGenerator } from '../bicepGenerator.js';
+import type { ProjectConfig } from '../../types/index.js';
 
 describe('BicepGenerator', () => {
   const generator = new BicepGenerator();

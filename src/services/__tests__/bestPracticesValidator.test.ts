@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { BestPracticesValidator } from '../bestPracticesValidator';
-import type { ProjectConfig } from '../../types';
+import { BestPracticesValidator } from '../bestPracticesValidator.js';
+import type { ProjectConfig } from '../../types/index.js';
 
 describe('BestPracticesValidator', () => {
   const validator = new BestPracticesValidator();
