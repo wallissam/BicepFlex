@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useProjectStore } from '../store/projectStore';
 import { bicepGenerator } from '../services/bicepGenerator';
 import { cicdGenerator } from '../services/cicdGenerator';
+import { SmartConnectionsService } from '../services/smartConnections';
 import RegionComparison from './RegionComparison';
 import TagManager from './TagManager';
 import CostAlert from './CostAlert';
@@ -12,22 +13,27 @@ import ResourceDependencyView from './ResourceDependencyView';
 import ExportFormats from './ExportFormats';
 import CostProjection from './CostProjection';
 import SecurityChecklist from './SecurityChecklist';
+import SmartConnections from './SmartConnections';
 import { downloadWithSetupScript } from '../utils/downloadHelpers';
 import { Download, Copy, Check, FileCode, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles, Package } from 'lucide-react';
 import type { ResourceTag } from '../types/tags';
+import type { ConnectionSuggestion } from '../services/smartConnections';
 import ContextualDocs from './ContextualDocs';
 
 export default function ReviewAndGenerate() {
-  const { project, completeStep } = useProjectStore();
+  const { project, completeStep, updateResource } = useProjectStore();
   const [copied, setCopied] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<string>('infra/main.bicep');
   const [showRegionComparison, setShowRegionComparison] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
   const [showCommands, setShowCommands] = useState(false);
+  const [showSmartConnections, setShowSmartConnections] = useState(true); // Show by default
   const [includeCICD, setIncludeCICD] = useState(true);
   const [cicdPlatform, setCICDPlatform] = useState<'github' | 'azure'>('github');
   const [tags, setTags] = useState<ResourceTag[]>([]);
   const includeTags = tags.length > 0;
+  
+  const smartConnectionsService = new SmartConnectionsService();
 
   const generatedFiles = bicepGenerator.generateInfrastructureFiles(project, includeTags, tags);
   
@@ -69,6 +75,34 @@ export default function ReviewAndGenerate() {
   const handleDownloadAsPackage = () => {
     downloadWithSetupScript(generatedFiles, project.name || 'bicepflex-project');
     completeStep('review');
+  };
+  
+  const handleApplyConnection = (suggestion: ConnectionSuggestion) => {
+    // Apply connection by updating resource dependencies
+    const sourceResource = project.resources.find(r => r.name === suggestion.source);
+    
+    if (sourceResource && !sourceResource.dependencies.includes(suggestion.target)) {
+      updateResource(sourceResource.id, {
+        dependencies: [...sourceResource.dependencies, suggestion.target]
+      });
+    }
+  };
+  
+  const handleApplyAllAutomatic = () => {
+    // Apply all automatic connections at once
+    const suggestions = smartConnectionsService.analyzeConnections(project);
+    const automaticSuggestions = suggestions.filter(s => s.automatic);
+    
+    automaticSuggestions.forEach(suggestion => {
+      const sourceResource = project.resources.find(r => r.name === suggestion.source);
+      if (sourceResource && !sourceResource.dependencies.includes(suggestion.target)) {
+        updateResource(sourceResource.id, {
+          dependencies: [...sourceResource.dependencies, suggestion.target]
+        });
+      }
+    });
+    
+    setShowSmartConnections(false); // Hide panel after applying
   };
 
   const fileList = Array.from(generatedFiles.keys());
@@ -135,6 +169,15 @@ export default function ReviewAndGenerate() {
 
       {/* Deployment Readiness Checklist */}
       <DeploymentReadinessChecklist />
+      
+      {/* Smart Resource Connections - Show if resources exist and have potential connections */}
+      {showSmartConnections && project.resources.length > 1 && (
+        <SmartConnections
+          config={project}
+          onApplyConnection={handleApplyConnection}
+          onApplyAllAutomatic={handleApplyAllAutomatic}
+        />
+      )}
       
       {/* Resource Dependency View */}
       {project.resources.length > 1 && (
