@@ -1,4 +1,4 @@
-import { AlertTriangle, TrendingUp, Lightbulb, DollarSign } from 'lucide-react';
+import { AlertTriangle, TrendingUp, Lightbulb } from 'lucide-react';
 import type { ResourceConfig } from '../types';
 
 interface CostAlertProps {

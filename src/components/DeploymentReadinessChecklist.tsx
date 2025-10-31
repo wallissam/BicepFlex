@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useProjectStore } from '../store/projectStore';
-import { CheckCircle, Circle, AlertCircle, ExternalLink, Terminal, Key, FileCode } from 'lucide-react';
+import { CheckCircle, Circle, AlertCircle, ExternalLink, Terminal, FileCode } from 'lucide-react';
 
 interface ChecklistItem {
   id: string;

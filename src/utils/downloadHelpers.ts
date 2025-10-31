@@ -11,7 +11,7 @@ export interface FileEntry {
 /**
  * Downloads multiple files as individual downloads (fallback for browsers without ZIP support)
  */
-export function downloadFilesIndividually(files: Map<string, string>, projectName: string): void {
+export function downloadFilesIndividually(files: Map<string, string>): void {
   files.forEach((content, filename) => {
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -76,9 +76,6 @@ echo ""
     if (dir) {
       setupScript += `mkdir -p "${dir}"\n`;
     }
-    
-    // Escape the content for safe embedding in heredoc
-    const escapedContent = content.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     
     setupScript += `cat > "${filename}" << 'BICEPFLEX_EOF'\n`;
     setupScript += content;

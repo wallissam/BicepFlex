@@ -112,6 +112,29 @@ const namingRules: Record<AzureResourceType, NamingRule> = {
     globallyUnique: true,
     examples: ['my-redis-cache', 'cache-prod'],
   },
+  containerRegistry: {
+    minLength: 5,
+    maxLength: 50,
+    allowedChars: 'Alphanumeric only',
+    globallyUnique: true,
+    examples: ['mycontainerregistry', 'acrprod2024'],
+  },
+  virtualMachine: {
+    minLength: 1,
+    maxLength: 64,
+    allowedChars: 'Alphanumeric, underscores, hyphens, periods',
+    globallyUnique: false,
+    examples: ['my-vm-01', 'prod-server'],
+  },
+  aks: {
+    minLength: 1,
+    maxLength: 63,
+    allowedChars: 'Alphanumeric and hyphens',
+    mustStartWith: 'Letter',
+    mustEndWith: 'Alphanumeric',
+    globallyUnique: false,
+    examples: ['my-aks-cluster', 'k8s-prod'],
+  },
 };
 
 interface ResourceNamingHelperProps {
