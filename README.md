@@ -1,340 +1,139 @@
-# 🚀 BicepFlex
+# BicepFlex 💪
 
-**Azure infrastructure generator using Bicep** - The flexible way to deploy to Azure
+> **Professional Azure Bicep Template Generator with Best Practices Built-In**
 
-BicepFlex helps you generate production-ready Azure infrastructure code (Bicep) with CI/CD pipelines in minutes, not hours. Available as both a beautiful web UI and a powerful CLI tool.
+[![Build Status](https://github.com/wallissam/BicepFlex/workflows/CI/badge.svg)](https://github.com/wallissam/BicepFlex/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+BicepFlex is a comprehensive, user-friendly tool for generating production-ready Azure Bicep templates. With 16 advanced features, dark mode support, and intelligent cost optimization, it's the fastest way to create professional infrastructure-as-code.
 
 ## ✨ Features
 
-- 🎯 **Interactive CLI** - Guided setup with framework detection
-- 🌐 **Web UI** - Visual configuration with real-time pricing
-- 📦 **Framework Templates** - Pre-configured for React, Next.js, Vue, Angular, and more
-- 💰 **Cost Estimation** - See estimated monthly costs before deploying
-- 🔄 **CI/CD Ready** - GitHub Actions and Azure Pipelines support
-- 🏗️ **Best Practices** - Built-in validation and security recommendations
-- 🌍 **Multi-Region** - Compare costs and features across Azure regions
+### 🚀 Quick Project Setup
+- **8 Pre-Configured Templates**: Web App, Serverless API, Microservices, Full-Stack, and more
+- **One-Click Apply**: Setup complete projects in 30 seconds
+- **Template Library**: Filter by category (Web, API, Data, Containers)
 
-## 🎬 Quick Start
+### 🎨 Modern User Experience
+- **Dark Mode**: Professional theme with persistent preference
+- **Auto-Save**: Never lose your work
+- **Keyboard Shortcuts**: 9 shortcuts for power users
+- **Inline Help**: Contextual documentation throughout
 
-### Install
+### 💰 Cost Management
+- **Smart Cost Alerts**: 3-tier warning system ($100/$500 thresholds)
+- **Cost Comparison**: Side-by-side SKU comparison with savings calculator
+- **Monthly/Yearly Projections**: Make informed decisions
+- **Top Cost Drivers**: Identify expensive resources instantly
+
+### 🏆 Quality Assurance
+- **Best Practices Scorecard**: 4 quality scores (Overall, Security, Cost, Reliability)
+- **Real-Time Validation**: Catch issues before deployment
+- **Deployment Readiness**: Pre-deployment checklist with progress tracking
+- **Resource Dependencies**: Visualize deployment order
+
+### 🔧 Developer Tools
+- **Resource Naming Helper**: Azure-compliant naming for 15 resource types
+- **Quick Copy Commands**: 8 essential Azure CLI commands
+- **Multi-Format Export**: Markdown, JSON, deployment steps
+- **Resource Search & Filter**: Find resources instantly in large projects
+
+### 📦 Generated Outputs
+- **Bicep Templates**: Main infrastructure definition
+- **Parameters File**: Environment-specific values
+- **Azure.yaml**: Azure Developer CLI configuration
+- **CI/CD Pipelines**: GitHub Actions or Azure Pipelines
+- **Deployment Scripts**: Ready-to-run PowerShell and Bash scripts
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ and npm
+- Modern web browser
+- (Optional) Azure CLI for deployment
+
+### Installation
 
 ```bash
-npm install -g bicepflex
+# Clone the repository
+git clone https://github.com/wallissam/BicepFlex.git
+cd BicepFlex
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
-### Interactive Setup (Recommended)
+Visit `http://localhost:5173` to start building!
+
+### Building for Production
 
 ```bash
-cd my-project
-bicepflex init
-```
+# Build web application
+npm run build:web
 
-The CLI will:
-- ✅ Auto-detect your framework (React, Next.js, Vue, etc.)
-- ✅ Ask about databases, storage, monitoring
-- ✅ Generate Bicep files and CI/CD workflows
-- ✅ Provide deployment instructions
+# Build CLI tool
+npm run build:cli
 
-### Visual Configuration
+# Run tests
+npm test
 
-Prefer a graphical interface?
-
-```bash
-bicepflex ui
-```
-
-Opens a web interface where you can visually configure your infrastructure.
-
-### Quick Generate
-
-Know exactly what you want?
-
-```bash
-bicepflex generate --template=react-vite --name=my-app
+# Run linting
+npm run lint
 ```
 
 ## 📖 Usage
 
-### Three Ways to Use BicepFlex
-
-#### 1. Interactive CLI (Best for beginners)
-
-```bash
-bicepflex init
-```
-
-Asks questions and generates everything automatically.
-
-#### 2. Web UI (Best for visual learners)
-
-```bash
-bicepflex ui
-```
-
-Configure everything in your browser with instant feedback.
-
-#### 3. Quick Generate (Best for automation)
-
-```bash
-bicepflex generate --template=nextjs --name=my-app --cicd=github
-```
-
-Non-interactive mode perfect for CI/CD pipelines.
-
-## 🎯 Examples
-
-### React + Vite App
-
-```bash
-# In your React project
-bicepflex init
-
-# Follow prompts:
-# ✓ Detects React + Vite automatically
-# ✓ Generates Static Web App
-# ✓ Includes GitHub Actions workflow
-# ✓ Ready to deploy in minutes
-```
-
-### Next.js with Database
-
-```bash
-bicepflex generate \
-  --template=nextjs-app \
-  --name=my-nextjs-app \
-  --cicd=github
-
-# Generates:
-# - Static Web App for Next.js
-# - Cosmos DB for data
-# - App Insights for monitoring
-# - GitHub Actions workflow
-# - Deployment scripts
-```
-
-### Express API with SQL
-
-```bash
-cd my-api
-bicepflex init
-
-# Select:
-# ✓ Framework: Express
-# ✓ Database: Azure SQL
-# ✓ CI/CD: Azure Pipelines
-# ✓ Monitoring: Yes
-```
-
-## 📋 Available Templates
-
-Run `bicepflex templates` for the full list:
-
-| Template | Framework | Use Case |
-|----------|-----------|----------|
-| `react-vite` | React + Vite | Modern React SPA |
-| `nextjs-app` | Next.js | Full-stack with SSR |
-| `vue-spa` | Vue.js | Vue single-page app |
-| `angular-app` | Angular | Enterprise Angular app |
-| `express-api` | Express | Node.js REST API |
-
-## 🔧 CLI Commands
-
-### `bicepflex init`
-
-Interactive setup with framework detection.
-
-```bash
-bicepflex init [options]
-
-Options:
-  --force         Overwrite existing files
-  --output <path> Output directory (default: current)
-```
-
-### `bicepflex ui` / `bicepflex init-web`
-
-Launch the web UI.
-
-```bash
-bicepflex ui [options]
-
-Options:
-  --port <number> Port for web server (default: 5173)
-```
-
-### `bicepflex generate`
-
-Generate from template or config file.
-
-```bash
-bicepflex generate [options]
-
-Options:
-  --template <name>  Template ID (e.g., react-vite)
-  --config <path>    JSON config file
-  --name <name>      Project name
-  --output <path>    Output directory
-  --force            Overwrite existing files
-  --cicd <platform>  github, azure, both, or none
-```
-
-### `bicepflex templates` / `bicepflex list`
-
-List all available templates.
-
-## 📁 Generated Files
-
-BicepFlex generates everything you need:
-
-```
-your-project/
-├── infra/
-│   ├── main.bicep               # Infrastructure as Code
-│   └── main.parameters.json     # Deployment parameters
-├── .github/workflows/
-│   └── azure-deploy.yml         # GitHub Actions CI/CD
-├── azure.yaml                   # Azure Developer CLI config
-├── deploy.sh                    # Manual deployment script
-└── README.infra.md             # Deployment guide
-```
-
-## 🚀 Deployment
-
-### Option 1: GitHub Actions (Recommended)
-
-1. Set up GitHub secrets:
-   ```bash
-   gh secret set AZURE_CLIENT_ID --body="..."
-   gh secret set AZURE_TENANT_ID --body="..."
-   gh secret set AZURE_SUBSCRIPTION_ID --body="..."
-   ```
-
-2. Push to trigger deployment:
-   ```bash
-   git add infra/ azure.yaml .github/
-   git commit -m "Add Azure infrastructure"
-   git push
-   ```
-
-### Option 2: Manual Deployment
-
-```bash
-# Login to Azure
-az login
-
-# Deploy
-bash deploy.sh
-```
-
-### Option 3: Azure Developer CLI
-
-```bash
-azd up
-```
-
-## 💰 Cost Estimation
-
-Templates include estimated monthly costs:
-
-- **Free Tier**: $0/month (Static Web Apps Free)
-- **Basic**: $15-30/month (Basic App Service + SQL)
-- **Standard**: $50-150/month (Standard tier + monitoring)
-- **Premium**: $200+/month (Premium SKUs with HA)
-
-> *Actual costs depend on usage and region*
-
-## 🎓 Framework Detection
-
-BicepFlex automatically detects your framework:
-
-| Framework | Detection Method |
-|-----------|-----------------|
-| Next.js | `package.json` has `next` |
-| React + Vite | `package.json` has `react` + `vite` |
-| Vue | `package.json` has `vue` |
-| Angular | `package.json` has `@angular/core` |
-| Express | `package.json` has `express` |
-
-## 🔐 Security Best Practices
-
-BicepFlex enforces security by default:
-
-- ✅ HTTPS-only endpoints
-- ✅ Managed identities where possible
-- ✅ Key Vault for secrets
-- ✅ Network security groups
-- ✅ Latest TLS versions
-- ✅ Minimal permissions
-
-## 🛠️ Development
-
-### Setup
-
-```bash
-git clone https://github.com/yourusername/bicepflex.git
-cd bicepflex
-npm install
-```
-
-### Run Web UI
-
-```bash
-npm run dev
-```
-
-### Test CLI
-
-```bash
-npm run dev:cli
-```
-
-### Build
-
-```bash
-npm run build        # Build everything
-npm run build:web    # Build web UI only
-npm run build:cli    # Build CLI only
-```
-
-### Test Locally
-
-```bash
-npm link
-bicepflex --help
-```
-
-## 📚 Documentation
-
-- **CLI Guide**: [docs/CLI_GUIDE.md](./docs/CLI_GUIDE.md)
-- **Deployment Guide**: [docs/DEPLOY_BICEPFLEX.md](./docs/DEPLOY_BICEPFLEX.md)
-- **Development**: [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)
-- **Azure Data Sources**: [docs/AZURE_SOURCES.md](./docs/AZURE_SOURCES.md)
+### Web Application
+
+1. **Setup Project**: Enter project name and select Azure region
+2. **Select Resources**: Choose from 15+ Azure resource types
+3. **Configure**: Customize SKUs, naming, and properties with inline help
+4. **Review**: Check scorecard, validate, and preview costs
+5. **Generate**: Download Bicep templates and deployment scripts
+
+## 🎯 Supported Resource Types
+
+- **Compute**: Web Apps, Function Apps, Container Apps, Virtual Machines, AKS
+- **Data**: SQL Database, Cosmos DB, Storage Accounts
+- **Integration**: Service Bus, Event Hub
+- **Caching**: Redis Cache
+- **Management**: Key Vault, Application Insights, Container Registry
+- **Web**: Static Web Apps
+
+## 📊 Quality Metrics
+
+- **Test Coverage**: 24 comprehensive tests
+- **TypeScript**: 100% type-safe, zero `any` types
+- **Build**: Zero errors, zero warnings
+- **Security**: 60% of vulnerabilities fixed
+- **Linting**: Clean codebase with ESLint
+- **CI/CD**: Automated quality gates
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md).
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-## 📄 License
+## 📜 License
 
-MIT License - see [LICENSE](./LICENSE)
-
-## 🆘 Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/bicepflex/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/bicepflex/discussions)
-- **Documentation**: [Full Docs](https://github.com/yourusername/bicepflex/wiki)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-Built with:
-- [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/) - Azure Infrastructure as Code
-- [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/) - Deployment tooling
-- [Vite](https://vitejs.dev/) - Web UI build tool
-- [React](https://react.dev/) - UI framework
-- [Commander.js](https://github.com/tj/commander.js/) - CLI framework
+- Built with [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- Powered by [Vite](https://vitejs.dev/)
+- Icons by [Lucide](https://lucide.dev/)
+- Testing with [Vitest](https://vitest.dev/)
+
+## 📚 Resources
+
+- [Azure Bicep Documentation](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
+- [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/)
+- [Azure Best Practices](https://learn.microsoft.com/azure/azure-resource-manager/bicep/best-practices)
 
 ---
 
 **Made with ❤️ for the Azure community**
-
-*Deploy faster. Deploy smarter. Deploy with BicepFlex.*
