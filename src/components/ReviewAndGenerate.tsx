@@ -8,6 +8,8 @@ import CostAlert from './CostAlert';
 import DeploymentReadinessChecklist from './DeploymentReadinessChecklist';
 import QuickCopyCommands from './QuickCopyCommands';
 import ResourceSearchFilter from './ResourceSearchFilter';
+import ResourceDependencyView from './ResourceDependencyView';
+import ExportFormats from './ExportFormats';
 import { downloadWithSetupScript } from '../utils/downloadHelpers';
 import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles, Package } from 'lucide-react';
 import type { ResourceTag } from '../types/tags';
@@ -130,6 +132,14 @@ export default function ReviewAndGenerate() {
 
       {/* Deployment Readiness Checklist */}
       <DeploymentReadinessChecklist />
+      
+      {/* Resource Dependency View */}
+      {project.resources.length > 1 && (
+        <ResourceDependencyView />
+      )}
+      
+      {/* Export Formats */}
+      <ExportFormats />
 
       {/* Modals */}
       <TagManager 
