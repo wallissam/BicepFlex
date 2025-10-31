@@ -67,7 +67,7 @@ class AzureRegionStatusService {
       region,
       displayName: this.getRegionDisplayName(region),
       available: true,
-      services: this.getMockServiceStatuses(region),
+      services: this.getMockServiceStatuses(),
       healthStatus: 'healthy',
       lastUpdated: new Date().toISOString(),
     };
@@ -124,7 +124,7 @@ class AzureRegionStatusService {
     return names[region] || region;
   }
 
-  private getMockServiceStatuses(_region: string): ServiceStatus[] {
+  private getMockServiceStatuses(): ServiceStatus[] {
     // Mock data - in production, this would come from Azure API
     const allServices = [
       'App Service',

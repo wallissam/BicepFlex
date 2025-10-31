@@ -8,20 +8,20 @@ export default function RegionHealthIndicator({ region }: { region: string }) {
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
+    const loadRegionStatus = async () => {
+      setLoading(true);
+      try {
+        const regionStatus = await azureRegionStatusService.getRegionStatus(region);
+        setStatus(regionStatus);
+      } catch (error) {
+        console.error('Failed to load region status:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadRegionStatus();
   }, [region]);
-
-  const loadRegionStatus = async () => {
-    setLoading(true);
-    try {
-      const regionStatus = await azureRegionStatusService.getRegionStatus(region);
-      setStatus(regionStatus);
-    } catch (error) {
-      console.error('Failed to load region status:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (

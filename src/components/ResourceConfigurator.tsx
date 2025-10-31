@@ -4,8 +4,9 @@ import { resourceTemplates, serviceNameMapping } from '../data/resourceTemplates
 import { useQuery } from '@tanstack/react-query';
 import { azurePricingService } from '../services/azurePricing';
 import type { AzureSKU, ResourceConfig } from '../types';
-import { DollarSign, Settings, ChevronDown, ChevronUp, ExternalLink, BookOpen, Lightbulb, Info } from 'lucide-react';
+import { DollarSign, Settings, ChevronDown, ChevronUp, ExternalLink, BookOpen, Lightbulb, Info, CheckCircle2 } from 'lucide-react';
 import { getRuntimeConfig, syncFunctionAppRuntimes } from '../data/runtimeOptions';
+import { getPropertyConfig } from '../data/configurationOptions';
 import ResourceNamingHelper from './ResourceNamingHelper';
 import CostComparison from './CostComparison';
 import AzurePricingInsights from './AzurePricingInsights';
@@ -243,6 +244,7 @@ function ResourceConfigCard({
               <div className="space-y-4">
                 {template.requiredProperties.map((prop) => {
                   const runtimeConfig = getRuntimeConfig(resource.type, prop);
+                  const propConfig = getPropertyConfig(resource.type, prop);
                   
                   // Render select dropdown for runtime properties
                   if (runtimeConfig) {
@@ -286,7 +288,136 @@ function ResourceConfigCard({
                     );
                   }
                   
-                  // Render text input for other properties
+                  // Render configured dropdown for properties with predefined options
+                  if (propConfig) {
+                    const currentValue = resource.properties[prop] ?? propConfig.defaultValue;
+                    const selectedOption = propConfig.options.find(opt => opt.value === currentValue);
+                    
+                    if (propConfig.type === 'boolean') {
+                      return (
+                        <div key={prop}>
+                          <label className="label text-sm flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <span>{propConfig.displayName}</span>
+                              <div title={propConfig.description}>
+                                <Info className="w-3.5 h-3.5 text-slate-400" />
+                              </div>
+                            </div>
+                            {propConfig.docsUrl && (
+                              <a
+                                href={propConfig.docsUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+                              >
+                                <BookOpen className="w-3 h-3" />
+                                <span>Docs</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </label>
+                          <p className="text-xs text-slate-600 mb-2">{propConfig.description}</p>
+                          <select
+                            value={String(currentValue)}
+                            onChange={(e) => handlePropertyChange(prop, e.target.value === 'true')}
+                            className="input"
+                          >
+                            {propConfig.options.map((option) => (
+                              <option key={String(option.value)} value={String(option.value)}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                          {selectedOption?.description && (
+                            <p className="text-xs text-slate-500 mt-1 flex items-start space-x-1">
+                              {selectedOption.recommended && <CheckCircle2 className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />}
+                              <span>{selectedOption.description}</span>
+                            </p>
+                          )}
+                        </div>
+                      );
+                    }
+                    
+                    return (
+                      <div key={prop}>
+                        <label className="label text-sm flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span>{propConfig.displayName}</span>
+                            <div title={propConfig.description}>
+                              <Info className="w-3.5 h-3.5 text-slate-400" />
+                            </div>
+                          </div>
+                          {propConfig.docsUrl && (
+                            <a
+                              href={propConfig.docsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+                            >
+                              <BookOpen className="w-3 h-3" />
+                              <span>Docs</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </label>
+                        <p className="text-xs text-slate-600 mb-2">{propConfig.description}</p>
+                        <select
+                          value={String(currentValue)}
+                          onChange={(e) => {
+                            // Parse value based on option type
+                            const option = propConfig.options.find(opt => String(opt.value) === e.target.value);
+                            if (option) {
+                              handlePropertyChange(prop, option.value);
+                            }
+                          }}
+                          className="input"
+                        >
+                          {propConfig.options.map((option) => (
+                            <option key={String(option.value)} value={String(option.value)}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                        {selectedOption?.description && (
+                          <p className="text-xs text-slate-500 mt-1 flex items-start space-x-1">
+                            {selectedOption.recommended && <CheckCircle2 className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />}
+                            <span>{selectedOption.description}</span>
+                          </p>
+                        )}
+                        {propConfig.showOptionsInline && (
+                          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <h5 className="text-xs font-semibold text-blue-900 mb-2">Available Options:</h5>
+                            <div className="grid grid-cols-2 gap-2">
+                              {propConfig.options.map((option) => {
+                                const isCurrent = option.value === currentValue;
+                                return (
+                                  <div 
+                                    key={String(option.value)}
+                                    className={`text-xs p-2 rounded ${
+                                      isCurrent 
+                                        ? 'bg-blue-100 border border-blue-300 font-semibold' 
+                                        : 'bg-white border border-slate-200'
+                                    }`}
+                                  >
+                                    <div className="flex items-center space-x-1">
+                                      {isCurrent && <CheckCircle2 className="w-3 h-3 text-blue-600" />}
+                                      {option.recommended && !isCurrent && <span className="text-green-600">★</span>}
+                                      <span className="text-slate-900">{option.label}</span>
+                                    </div>
+                                    {option.description && (
+                                      <p className="text-slate-600 mt-0.5">{option.description}</p>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                  
+                  // Render text input for properties without configured options
                   return (
                     <div key={prop}>
                       <label className="label text-sm">{formatPropertyName(prop)}</label>
