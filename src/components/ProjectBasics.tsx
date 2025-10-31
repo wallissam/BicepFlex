@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useProjectStore } from '../store/projectStore';
 import { commonRegions } from '../data/resourceTemplates';
 import { MapPin, ExternalLink, Info, BookOpen } from 'lucide-react';
+import RegionHealthIndicator from './RegionHealthIndicator';
 
 export default function ProjectBasics() {
   const { project, setProjectName, setRegion, completeStep } = useProjectStore();
@@ -146,6 +147,13 @@ export default function ProjectBasics() {
             </a>
           </div>
         </div>
+        
+        {/* Region Health Status */}
+        {localRegion && (
+          <div className="mt-3">
+            <RegionHealthIndicator region={localRegion} />
+          </div>
+        )}
       </div>
 
       {/* Preview Card */}

@@ -80,7 +80,6 @@ export default function CostComparison({ resource, availableSKUs, onSKUChange }:
                     const costDiff = estimatedMonthlyCost - currentMonthlyCost;
                     const isCurrentSKU = sku.name === resource.sku.name && sku.tier === resource.sku.tier;
                     const isCheaper = costDiff < 0;
-                    const isMoreExpensive = costDiff > 0;
                     
                     return (
                       <button

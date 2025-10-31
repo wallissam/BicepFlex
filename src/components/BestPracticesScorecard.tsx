@@ -10,7 +10,6 @@ export default function BestPracticesScorecard() {
   const issues = bestPracticesValidator.validate(project);
   
   // Calculate scores
-  const totalChecks = 20; // Base number of checks
   const errors = issues.filter(i => i.severity === 'error').length;
   const warnings = issues.filter(i => i.severity === 'warning').length;
   
@@ -42,7 +41,6 @@ export default function BestPracticesScorecard() {
   
   // Reliability score
   const hasMonitoring = project.resources.some(r => r.type === 'appInsights');
-  const hasBackup = issues.some(i => i.message.includes('backup'));
   const reliabilityScore = hasMonitoring ? 85 : 70;
   
   const scores = [

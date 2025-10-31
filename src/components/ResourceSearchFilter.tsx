@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useProjectStore } from '../store/projectStore';
-import type { ResourceConfig } from '../types';
 import { Search, Filter, X, DollarSign } from 'lucide-react';
 
 export default function ResourceSearchFilter() {

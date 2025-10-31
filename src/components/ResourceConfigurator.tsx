@@ -8,6 +8,8 @@ import { DollarSign, Settings, ChevronDown, ChevronUp, ExternalLink, BookOpen, L
 import { getRuntimeConfig, syncFunctionAppRuntimes } from '../data/runtimeOptions';
 import ResourceNamingHelper from './ResourceNamingHelper';
 import CostComparison from './CostComparison';
+import AzurePricingInsights from './AzurePricingInsights';
+import ContextualDocs from './ContextualDocs';
 
 export default function ResourceConfigurator() {
   const { project, completeStep } = useProjectStore();
@@ -351,6 +353,16 @@ function ResourceConfigCard({
               </p>
             </div>
           )}
+
+          {/* Azure Pricing Insights */}
+          <AzurePricingInsights
+            region={project.region}
+            resourceType={resource.type}
+            currentSKU={resource.sku.tier}
+          />
+
+          {/* Contextual Documentation */}
+          <ContextualDocs resourceType={resource.type} context="resource" />
         </div>
       )}
     </div>

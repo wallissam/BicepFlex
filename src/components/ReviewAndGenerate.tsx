@@ -11,8 +11,9 @@ import ResourceSearchFilter from './ResourceSearchFilter';
 import ResourceDependencyView from './ResourceDependencyView';
 import ExportFormats from './ExportFormats';
 import { downloadWithSetupScript } from '../utils/downloadHelpers';
-import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles, Package } from 'lucide-react';
+import { Download, Copy, Check, FileCode, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles, Package } from 'lucide-react';
 import type { ResourceTag } from '../types/tags';
+import ContextualDocs from './ContextualDocs';
 
 export default function ReviewAndGenerate() {
   const { project, completeStep } = useProjectStore();
@@ -140,6 +141,12 @@ export default function ReviewAndGenerate() {
       
       {/* Export Formats */}
       <ExportFormats />
+
+      {/* Contextual Documentation - Deployment Guides */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ContextualDocs context="deployment" />
+        <ContextualDocs context="cost" />
+      </div>
 
       {/* Modals */}
       <TagManager 
