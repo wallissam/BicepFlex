@@ -255,6 +255,21 @@ export default function SecurityChecklist() {
           const stats = categoryStats(key);
           const isExpanded = expandedCategory === key;
           const categoryChecks = groupedChecks[key] || [];
+          
+          // Map colors to actual Tailwind classes for proper purging
+          const iconColorClass = 
+            config.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
+            config.color === 'purple' ? 'text-purple-600 dark:text-purple-400' :
+            config.color === 'green' ? 'text-green-600 dark:text-green-400' :
+            config.color === 'amber' ? 'text-amber-600 dark:text-amber-400' :
+            'text-indigo-600 dark:text-indigo-400';
+            
+          const progressColorClass =
+            config.color === 'blue' ? 'bg-blue-500' :
+            config.color === 'purple' ? 'bg-purple-500' :
+            config.color === 'green' ? 'bg-green-500' :
+            config.color === 'amber' ? 'bg-amber-500' :
+            'bg-indigo-500';
 
           return (
             <div key={key} className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
@@ -263,7 +278,7 @@ export default function SecurityChecklist() {
                 className="w-full p-4 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`h-5 w-5 text-${config.color}-600 dark:text-${config.color}-400`} />
+                  <Icon className={iconColorClass} />
                   <div className="text-left">
                     <div className="font-medium text-slate-900 dark:text-slate-100">
                       {config.label}
@@ -277,7 +292,7 @@ export default function SecurityChecklist() {
                 <div className="flex items-center gap-3">
                   <div className="w-32 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full bg-${config.color}-500`}
+                      className={`h-2 rounded-full ${progressColorClass}`}
                       style={{ width: `${stats.percentage}%` }}
                     />
                   </div>

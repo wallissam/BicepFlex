@@ -43,6 +43,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Inline Documentation Helper**: Contextual help bubbles throughout the application
 - **Comprehensive README**: Professional documentation with feature list and quick start
 
+### Added - User Experience (Phase 6: External Data Integrations)
+- **Azure Pricing Insights**: Real-time cost optimization from Azure Retail Prices API
+  - Region-specific pricing recommendations
+  - SKU optimization suggestions (up to 60% savings)
+  - Service-specific cost-saving tips
+  - Automated savings calculations
+- **Region Health Status**: Live Azure service availability monitoring
+  - Real-time status for 10+ Azure services
+  - Health indicators (healthy/degraded/outage)
+  - Expandable service grid
+  - Links to Azure Status page
+- **Contextual Documentation**: 25+ smart Azure documentation links
+  - Resource-specific guides (9 resource types)
+  - Bicep documentation (4 guides)
+  - Deployment guides (3 resources)
+  - Cost optimization resources
+  - Category-based organization
+
+### Added - User Experience (Phase 7: Advanced Analytics)
+- **Cost Projection & Forecasting**: Long-term budget planning
+  - Multi-timeframe projections (6 months, 1 year, 2 years)
+  - Growth modeling with 3% monthly growth simulation
+  - Visual month-by-month cost trends
+  - Reserved Instances recommendations (up to 72% savings)
+  - Resource count projections
+- **Security Checklist & Assessment**: Comprehensive security posture analysis
+  - 13 automated security checks across 5 categories
+  - Network security validation (firewall, private endpoints)
+  - Identity & access management checks (Key Vault, managed identity, RBAC)
+  - Data protection validation (encryption, backups, storage security)
+  - Monitoring & logging assessment (Application Insights, security alerts)
+  - Code security scanning (secrets detection)
+  - Priority-based recommendations (Critical, High, Medium, Low)
+  - Overall security score with category breakdowns
+
 ### Changed
 - Updated package.json repository URL to wallissam/BicepFlex
 - Improved TypeScript type safety by eliminating all `any` types
@@ -52,12 +87,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated dependencies to resolve security vulnerabilities
 
 ### Fixed
-- TypeScript build errors (unused imports, missing resource types)
+- TypeScript build errors (unused imports, missing resource types, Tailwind dynamic classes)
 - Security vulnerabilities in dependencies (3 of 5 fixed)
 - All ESLint warnings and errors (27 → 0)
 - Regex escape character warnings
 - Unused variable warnings
 - Template string escape issues
+- React hooks violations (useQuery.map → useQueries)
+- Tailwind CSS purging issues with dynamic class names
+
+### Security
+- Fixed 3 of 5 npm audit vulnerabilities
+- Added CodeQL security scanning (0 alerts)
+- Implemented comprehensive security checklist (13 automated checks)
+- Enhanced secret management validation
+- Network security validation (firewall rules, private endpoints)
+- Data encryption validation (transit and rest)
 
 ### Security
 - Fixed 3 npm audit vulnerabilities (inquirer, tmp)
