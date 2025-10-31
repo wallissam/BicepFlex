@@ -20,14 +20,22 @@ export default function BestPracticesScorecard() {
   
   // Security score - based on actual security checks
   const hasKeyVault = project.resources.some(r => r.type === 'keyVault');
-  const hasAppInsights = project.resources.some(r => r.type === 'appInsights');
   const hasManagedIdentity = project.resources.some(r => 
     r.properties?.managedIdentity || r.properties?.enableManagedIdentity
   );
   
+  const securityIssues = issues.filter(i => 
+    i.severity === 'error' && (i.message.toLowerCase().includes('security') || 
+    i.message.toLowerCase().includes('password') || 
+    i.message.toLowerCase().includes('key'))
+  );
+  
   let securityScore = 100;
   if (!hasKeyVault) securityScore -= 25; // Key Vault is critical for secrets
+  if (!hasManagedIdentity) securityScore -= 15;
+  securityScore -= Math.min(securityIssues.length * 10, 40);
   if (!hasManagedIdentity) securityScore -= 20; // Managed Identity improves security
+  if (!hasAppInsights) securityScore -= 15; // App Insights for monitoring
   securityScore -= securityIssues.length * 10; // Each security issue costs 10 points
   securityScore = Math.max(0, securityScore);
   

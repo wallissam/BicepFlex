@@ -10,6 +10,8 @@ interface SecurityCheck {
   status: 'pass' | 'fail' | 'warning' | 'na';
   recommendation?: string;
   priority: 'critical' | 'high' | 'medium' | 'low';
+  autoApplicable: boolean;
+  costImpact: 'none' | 'low' | 'medium' | 'high';
 }
 
 export default function SecurityChecklist() {
