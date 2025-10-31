@@ -1,6 +1,6 @@
 import { useProjectStore } from '../store/projectStore';
 import { bestPracticesValidator } from '../services/bestPracticesValidator';
-import { Shield, DollarSign, Zap, Award, TrendingUp, AlertCircle } from 'lucide-react';
+import { Shield, DollarSign, Zap, Award, TrendingUp } from 'lucide-react';
 
 export default function BestPracticesScorecard() {
   const { project } = useProjectStore();
@@ -108,78 +108,57 @@ export default function BestPracticesScorecard() {
   };
   
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-      {/* Header */}
-      <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-b border-purple-200 dark:border-purple-800">
-        <div className="flex items-center justify-between">
+    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden shadow-sm">
+      {/* Compact Header */}
+      <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-b border-purple-200 dark:border-purple-800">
+        <div className="flex items-center justify-between mb-1">
           <div className="flex items-center space-x-2">
-            <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            <h3 className="font-semibold text-slate-900 dark:text-white">Best Practices Scorecard</h3>
+            <TrendingUp className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <h3 className="font-semibold text-sm text-slate-900 dark:text-white">Quality Score</h3>
           </div>
           {overallScore >= 80 && (
-            <div className="flex items-center space-x-1 text-green-600 dark:text-green-400 text-sm font-medium">
-              <Award className="w-4 h-4" />
-              <span>Production Ready</span>
-            </div>
+            <Award className="w-4 h-4 text-green-600 dark:text-green-400" />
           )}
         </div>
-        <p className="text-sm text-purple-700 dark:text-purple-300 mt-1">
-          Comprehensive analysis of your infrastructure configuration
-        </p>
       </div>
 
-      {/* Score Cards */}
-      <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Compact Score Cards - Stacked */}
+      <div className="p-3 space-y-2">
         {scores.map((score) => {
           const colors = getColorClasses(score.color);
           const Icon = score.icon;
           
           return (
-            <div key={score.title} className={`p-4 ${colors.lightBg} border ${colors.border} rounded-lg`}>
-              <div className="flex items-center justify-between mb-2">
-                <Icon className={`w-5 h-5 ${colors.text}`} />
-                <span className={`text-2xl font-bold ${colors.text}`}>{score.score}</span>
-              </div>
-              <div className="space-y-1">
-                <h4 className="font-semibold text-sm text-slate-900 dark:text-white">{score.title}</h4>
-                <p className="text-xs text-slate-600 dark:text-slate-400">{score.description}</p>
-              </div>
-              {/* Progress bar */}
-              <div className="mt-2 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full ${colors.bg} transition-all duration-500`}
-                  style={{ width: `${score.score}%` }}
-                />
+            <div key={score.title} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 flex-1">
+                <Icon className={`w-4 h-4 ${colors.text} flex-shrink-0`} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-slate-900 dark:text-white">{score.title}</span>
+                    <span className={`text-sm font-bold ${colors.text} ml-2`}>{score.score}</span>
+                  </div>
+                  <div className="h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full ${colors.bg} transition-all duration-500`}
+                      style={{ width: `${score.score}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Summary */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
-        <div className="flex items-start space-x-2 text-sm">
+      {/* Compact Summary */}
+      <div className="px-3 pb-3">
+        <div className="text-xs text-slate-600 dark:text-slate-400 pt-2 border-t border-slate-200 dark:border-slate-700">
           {overallScore >= 80 ? (
-            <>
-              <Award className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-              <p className="text-slate-700 dark:text-slate-300">
-                <strong className="text-green-600 dark:text-green-400">Excellent!</strong> Your configuration follows Azure best practices and is ready for production deployment.
-              </p>
-            </>
+            <span className="text-green-600 dark:text-green-400 font-medium">✓ Production Ready</span>
           ) : overallScore >= 60 ? (
-            <>
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <p className="text-slate-700 dark:text-slate-300">
-                <strong className="text-amber-600 dark:text-amber-400">Good progress!</strong> Address the warnings in the validation panel to improve your score.
-              </p>
-            </>
+            <span className="text-amber-600 dark:text-amber-400 font-medium">⚠ Review Warnings</span>
           ) : (
-            <>
-              <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-              <p className="text-slate-700 dark:text-slate-300">
-                <strong className="text-red-600 dark:text-red-400">Needs attention.</strong> Review and fix the errors in the validation panel before deploying.
-              </p>
-            </>
+            <span className="text-red-600 dark:text-red-400 font-medium">✗ Fix Errors</span>
           )}
         </div>
       </div>

@@ -8,7 +8,6 @@ export default function ValidationPanel() {
   const { project } = useProjectStore();
   const [issues, setIssues] = useState<ValidationIssue[]>([]);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'error' | 'warning' | 'info'>('all');
 
   useEffect(() => {
     if (project.resources.length > 0) {
@@ -19,23 +18,19 @@ export default function ValidationPanel() {
     }
   }, [project]);
 
-  const filteredIssues = filter === 'all' 
-    ? issues 
-    : issues.filter(issue => issue.severity === filter);
-
   const errorCount = issues.filter(i => i.severity === 'error').length;
   const warningCount = issues.filter(i => i.severity === 'warning').length;
   const infoCount = issues.filter(i => i.severity === 'info').length;
 
   if (issues.length === 0 && project.resources.length > 0) {
     return (
-      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-        <div className="flex items-center space-x-3">
-          <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
-          <div>
-            <h4 className="font-semibold text-green-900 dark:text-green-100">All Checks Passed!</h4>
-            <p className="text-sm text-green-700 dark:text-green-300">
-              Your configuration follows Azure best practices. Ready to generate!
+      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 shadow-sm">
+        <div className="flex items-center space-x-2">
+          <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <h4 className="font-semibold text-sm text-green-900 dark:text-green-100">All Checks Passed!</h4>
+            <p className="text-xs text-green-700 dark:text-green-300 mt-0.5">
+              Ready to generate
             </p>
           </div>
         </div>
@@ -48,137 +43,62 @@ export default function ValidationPanel() {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-      {/* Header */}
+    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden shadow-sm">
+      {/* Compact Header */}
       <div 
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+        className="flex items-center justify-between p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center space-x-3">
-          <AlertCircle className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          <div>
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100">Validation & Best Practices</h3>
-            <div className="flex items-center space-x-3 mt-1">
+        <div className="flex items-center space-x-2 flex-1 min-w-0">
+          <AlertCircle className="w-4 h-4 text-slate-600 dark:text-slate-400 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-sm text-slate-900 dark:text-slate-100">Validation</h3>
+            <div className="flex items-center space-x-2 mt-0.5 text-xs">
               {errorCount > 0 && (
-                <span className="text-xs text-red-600 dark:text-red-400 font-medium">
-                  {errorCount} error{errorCount !== 1 ? 's' : ''}
-                </span>
+                <span className="text-red-600 dark:text-red-400 font-medium">{errorCount}↓</span>
               )}
               {warningCount > 0 && (
-                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                  {warningCount} warning{warningCount !== 1 ? 's' : ''}
-                </span>
+                <span className="text-amber-600 dark:text-amber-400 font-medium">{warningCount}⚠</span>
               )}
               {infoCount > 0 && (
-                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                  {infoCount} suggestion{infoCount !== 1 ? 's' : ''}
-                </span>
+                <span className="text-blue-600 dark:text-blue-400 font-medium">{infoCount}ℹ</span>
               )}
             </div>
           </div>
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-slate-400" />
+          <ChevronUp className="w-4 h-4 text-slate-400 flex-shrink-0" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-slate-400" />
+          <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
         )}
       </div>
 
-      {/* Content */}
+      {/* Compact Content */}
       {isExpanded && (
         <div className="border-t border-slate-200 dark:border-slate-700">
-          {/* Filter Tabs */}
-          <div className="flex space-x-1 p-2 bg-slate-50 dark:bg-slate-900/50">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-                filter === 'all'
-                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 font-medium shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              All ({issues.length})
-            </button>
-            {errorCount > 0 && (
-              <button
-                onClick={() => setFilter('error')}
-                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-                  filter === 'error'
-                    ? 'bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 font-medium shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400'
-                }`}
-              >
-                Errors ({errorCount})
-              </button>
-            )}
-            {warningCount > 0 && (
-              <button
-                onClick={() => setFilter('warning')}
-                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-                  filter === 'warning'
-                    ? 'bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 font-medium shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-400'
-                }`}
-              >
-                Warnings ({warningCount})
-              </button>
-            )}
-            {infoCount > 0 && (
-              <button
-                onClick={() => setFilter('info')}
-                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-                  filter === 'info'
-                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 font-medium shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400'
-                }`}
-              >
-                Info ({infoCount})
-              </button>
-            )}
-          </div>
-
-          {/* Issues List */}
-          <div className="max-h-96 overflow-y-auto">
-            {filteredIssues.map((issue, idx: number) => {
-              const Icon = 
-                issue.severity === 'error' ? AlertCircle :
-                issue.severity === 'warning' ? AlertTriangle :
-                Info;
+          {/* Compact Issue List */}
+          <div className="max-h-64 overflow-y-auto">
+            {issues.slice(0, 5).map((issue, index) => {
+              const Icon = issue.severity === 'error' ? AlertCircle : 
+                          issue.severity === 'warning' ? AlertTriangle : Info;
+              const colorClass = issue.severity === 'error' ? 'text-red-600 dark:text-red-400' :
+                                issue.severity === 'warning' ? 'text-amber-600 dark:text-amber-400' :
+                                'text-blue-600 dark:text-blue-400';
               
-              const colorClass = 
-                issue.severity === 'error' ? 'text-red-600 dark:text-red-400' :
-                issue.severity === 'warning' ? 'text-amber-600 dark:text-amber-400' :
-                'text-blue-600 dark:text-blue-400';
-              
-              const bgClass = 
-                issue.severity === 'error' ? 'bg-red-50 dark:bg-red-900/10' :
-                issue.severity === 'warning' ? 'bg-amber-50 dark:bg-amber-900/10' :
-                'bg-blue-50 dark:bg-blue-900/10';
-
               return (
-                <div 
-                  key={idx} 
-                  className={`p-4 border-b border-slate-200 dark:border-slate-700 last:border-b-0 hover:${bgClass} transition-colors`}
-                >
-                  <div className="flex items-start space-x-3">
-                    <Icon className={`w-5 h-5 ${colorClass} mt-0.5 flex-shrink-0`} />
-                    <div className="flex-1 min-w-0">
-                      {issue.resource && (
-                        <div className={`text-xs font-medium ${colorClass} mb-1`}>
-                          {issue.resource}
-                        </div>
-                      )}
-                      <p className="text-sm text-slate-900 dark:text-slate-100 font-medium mb-1">
-                        {issue.message}
-                      </p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        💡 {issue.recommendation}
-                      </p>
-                    </div>
+                <div key={index} className="p-2 border-b border-slate-100 dark:border-slate-700 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                  <div className="flex items-start space-x-2">
+                    <Icon className={`w-3 h-3 ${colorClass} mt-0.5 flex-shrink-0`} />
+                    <p className="text-xs text-slate-700 dark:text-slate-300 flex-1">{issue.message}</p>
                   </div>
                 </div>
               );
             })}
+            {issues.length > 5 && (
+              <div className="p-2 text-center text-xs text-slate-500 dark:text-slate-400">
+                +{issues.length - 5} more issues
+              </div>
+            )}
           </div>
         </div>
       )}

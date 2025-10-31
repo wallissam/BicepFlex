@@ -202,37 +202,39 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Best Practices Scorecard - shown after step 1 */}
-        {currentStep >= 1 && project.resources.length > 0 && (
-          <div className="mb-6">
-            <BestPracticesScorecard />
-          </div>
-        )}
-        
-        {/* Validation Panel - shown after step 1 */}
-        {currentStep >= 1 && project.resources.length > 0 && (
-          <div className="mb-6">
-            <ValidationPanel />
-          </div>
-        )}
-        
         {/* Step Indicator */}
         <div className="mb-8">
           <StepIndicator />
         </div>
 
-        {/* Step Content */}
-        <div className="card min-h-[500px]">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-              {steps[currentStep].title}
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
-              {steps[currentStep].description}
-            </p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Primary Content - Main Experience */}
+          <div className="lg:col-span-8 xl:col-span-9">
+            {/* Step Content */}
+            <div className="card min-h-[500px]">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {steps[currentStep].title}
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400 mt-1">
+                  {steps[currentStep].description}
+                </p>
+              </div>
+
+              {renderStep()}
+            </div>
           </div>
 
-          {renderStep()}
+          {/* Secondary Sidebar - Analytics & Insights */}
+          {currentStep >= 1 && project.resources.length > 0 && (
+            <div className="lg:col-span-4 xl:col-span-3 space-y-6">
+              {/* Best Practices Scorecard - Compact */}
+              <BestPracticesScorecard />
+              
+              {/* Validation Panel - Compact */}
+              <ValidationPanel />
+            </div>
+          )}
         </div>
 
         {/* Navigation Buttons */}
