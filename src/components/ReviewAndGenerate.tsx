@@ -91,7 +91,7 @@ export default function ReviewAndGenerate() {
   const handleApplyAllAutomatic = () => {
     // Apply all automatic connections at once
     const suggestions = smartConnectionsService.analyzeConnections(project);
-    const automaticSuggestions = suggestions.filter(s => s.automatic);
+    const automaticSuggestions = suggestions.filter(s => s.type === 'automatic');
     
     automaticSuggestions.forEach(suggestion => {
       const sourceResource = project.resources.find(r => r.name === suggestion.source);
