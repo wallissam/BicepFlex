@@ -36,8 +36,10 @@ export default function SecurityChecklist() {
       title: 'Firewall Rules Configured',
       description: 'SQL databases and storage accounts should have firewall rules',
       status: hasPublicEndpoints ? 'warning' : 'pass',
-      recommendation: 'Enable firewall rules to restrict access to specific IP ranges',
+      recommendation: hasPublicEndpoints ? 'Enable firewall rules to restrict access to specific IP ranges' : undefined,
       priority: 'high',
+      autoApplicable: true,
+      costImpact: 'none',
     });
 
     checks.push({

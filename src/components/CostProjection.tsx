@@ -49,9 +49,9 @@ export default function CostProjection() {
 
   const projections = generateProjections();
   const totalProjectedCost = projections.reduce((sum, p) => sum + p.cost, 0);
-  const finalMonthCost = projections[projections.length - 1].cost;
+  const finalMonthCost = projections[projections.length - 1]?.cost || 0;
   const costIncrease = finalMonthCost - monthlyCost;
-  const percentageIncrease = (costIncrease / monthlyCost) * 100;
+  const percentageIncrease = monthlyCost > 0 ? (costIncrease / monthlyCost) * 100 : 0;
 
   return (
     <div className="p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">

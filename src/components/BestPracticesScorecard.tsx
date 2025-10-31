@@ -18,26 +18,36 @@ export default function BestPracticesScorecard() {
   const warningPenalty = warnings * 5;
   const overallScore = Math.max(0, 100 - errorPenalty - warningPenalty);
   
-  // Security score
-  const securityIssues = issues.filter(i => 
-    i.message.toLowerCase().includes('security') ||
-    i.message.toLowerCase().includes('password') ||
-    i.message.toLowerCase().includes('public') ||
-    i.message.toLowerCase().includes('firewall')
+  // Security score - based on actual security checks
+  const hasKeyVault = project.resources.some(r => r.type === 'keyVault');
+  const hasAppInsights = project.resources.some(r => r.type === 'appInsights');
+  const hasManagedIdentity = project.resources.some(r => 
+    r.properties?.managedIdentity || r.properties?.enableManagedIdentity
   );
-  const securityScore = Math.max(0, 100 - (securityIssues.length * 15));
   
-  // Cost optimization score
-  const hasCostOptimization = project.resources.some(r => 
-    r.sku.tier.toLowerCase().includes('basic') ||
-    r.sku.tier.toLowerCase().includes('free') ||
-    r.sku.tier.toLowerCase().includes('standard')
-  );
-  const hasExpensiveResources = project.resources.some(r =>
-    r.sku.tier.toLowerCase().includes('premium') ||
-    (r.pricing?.estimatedMonthlyCost || 0) > 200
-  );
-  const costScore = hasCostOptimization && !hasExpensiveResources ? 85 : hasExpensiveResources ? 60 : 75;
+  let securityScore = 100;
+  if (!hasKeyVault) securityScore -= 25; // Key Vault is critical for secrets
+  if (!hasManagedIdentity) securityScore -= 20; // Managed Identity improves security
+  securityScore -= securityIssues.length * 10; // Each security issue costs 10 points
+  securityScore = Math.max(0, securityScore);
+  
+  // Cost optimization score - based on actual resource costs and SKU selections
+  const totalMonthlyCost = project.resources.reduce((sum, r) => sum + (r.pricing?.estimatedMonthlyCost || 0), 0);
+  const avgCostPerResource = totalMonthlyCost / Math.max(1, project.resources.length);
+  
+  let costScore = 100;
+  if (totalMonthlyCost > 500) costScore -= 30; // Very expensive project
+  else if (totalMonthlyCost > 200) costScore -= 15; // Expensive project
+  if (avgCostPerResource > 100) costScore -= 15; // High average cost per resource
+  
+  const hasPremiumResources = project.resources.some(r => r.sku.tier.toLowerCase().includes('premium'));
+  if (hasPremiumResources) {
+    const premiumCount = project.resources.filter(r => r.sku.tier.toLowerCase().includes('premium')).length;
+    const totalCount = project.resources.length;
+    if (premiumCount / totalCount > 0.5) costScore -= 20; // More than half premium
+  }
+  
+  costScore = Math.max(0, costScore);
   
   // Reliability score
   const hasMonitoring = project.resources.some(r => r.type === 'appInsights');
@@ -56,14 +66,14 @@ export default function BestPracticesScorecard() {
       score: securityScore,
       icon: Shield,
       color: securityScore >= 80 ? 'green' : securityScore >= 60 ? 'amber' : 'red',
-      description: `${securityIssues.length} security ${securityIssues.length === 1 ? 'issue' : 'issues'}`,
+      description: securityScore >= 80 ? 'Strong security posture' : securityScore >= 60 ? 'Security can be improved' : 'Security issues detected',
     },
     {
       title: 'Cost',
       score: costScore,
       icon: DollarSign,
       color: costScore >= 80 ? 'green' : costScore >= 60 ? 'amber' : 'red',
-      description: hasExpensiveResources ? 'Has expensive resources' : 'Well optimized',
+      description: costScore >= 80 ? 'Cost-optimized' : costScore >= 60 ? 'Moderate costs' : 'High costs detected',
     },
     {
       title: 'Reliability',
