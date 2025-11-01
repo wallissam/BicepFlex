@@ -23,6 +23,7 @@ export default function BestPracticesScorecard() {
   const hasManagedIdentity = project.resources.some(r => 
     r.properties?.managedIdentity || r.properties?.enableManagedIdentity
   );
+  const hasAppInsights = project.resources.some(r => r.type === 'appInsights');
   
   const securityIssues = issues.filter(i => 
     i.severity === 'error' && (i.message.toLowerCase().includes('security') || 
