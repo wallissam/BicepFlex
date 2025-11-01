@@ -52,6 +52,8 @@ export default function SecurityChecklist() {
       status: 'na',
       recommendation: 'Consider using Azure Private Link for PaaS services',
       priority: 'medium',
+      autoApplicable: false,
+      costImpact: 'medium',
     });
 
     // Identity & Access Checks
@@ -65,6 +67,8 @@ export default function SecurityChecklist() {
       status: hasKeyVault ? 'pass' : 'warning',
       recommendation: 'Add Azure Key Vault to securely store connection strings, API keys, and certificates',
       priority: 'critical',
+      autoApplicable: true,
+      costImpact: 'low',
     });
 
     checks.push({
@@ -75,6 +79,8 @@ export default function SecurityChecklist() {
       status: 'na',
       recommendation: 'Enable system-assigned or user-assigned managed identities for Azure resources',
       priority: 'high',
+      autoApplicable: true,
+      costImpact: 'none',
     });
 
     checks.push({
@@ -85,6 +91,8 @@ export default function SecurityChecklist() {
       status: 'na',
       recommendation: 'Use Azure RBAC to grant minimum necessary permissions',
       priority: 'high',
+      autoApplicable: false,
+      costImpact: 'none',
     });
 
     // Data Protection Checks
@@ -100,6 +108,8 @@ export default function SecurityChecklist() {
         description: 'All database connections use TLS/SSL',
         status: 'pass',
         priority: 'critical',
+        autoApplicable: true,
+        costImpact: 'none',
       });
 
       checks.push({
@@ -109,6 +119,8 @@ export default function SecurityChecklist() {
         description: 'Data is encrypted at rest',
         status: 'pass',
         priority: 'critical',
+        autoApplicable: true,
+        costImpact: 'none',
       });
 
       checks.push({
@@ -119,6 +131,8 @@ export default function SecurityChecklist() {
         status: 'warning',
         recommendation: 'Configure automated backups with appropriate retention period',
         priority: 'high',
+        autoApplicable: true,
+        costImpact: 'low',
       });
     }
 
@@ -131,6 +145,8 @@ export default function SecurityChecklist() {
         status: 'warning',
         recommendation: 'Enable "Secure transfer required" and configure network rules',
         priority: 'high',
+        autoApplicable: true,
+        costImpact: 'none',
       });
     }
 
@@ -145,6 +161,8 @@ export default function SecurityChecklist() {
       status: hasAppInsights ? 'pass' : 'warning',
       recommendation: 'Add Application Insights for application performance monitoring and diagnostics',
       priority: 'medium',
+      autoApplicable: true,
+      costImpact: 'low',
     });
 
     checks.push({
@@ -155,6 +173,8 @@ export default function SecurityChecklist() {
       status: 'na',
       recommendation: 'Enable Azure Defender for enhanced threat protection',
       priority: 'medium',
+      autoApplicable: false,
+      costImpact: 'high',
     });
 
     // Code Security Checks
@@ -165,6 +185,8 @@ export default function SecurityChecklist() {
       description: 'Bicep files scanned for security issues',
       status: 'pass',
       priority: 'low',
+      autoApplicable: true,
+      costImpact: 'none',
     });
 
     checks.push({
@@ -175,6 +197,8 @@ export default function SecurityChecklist() {
       status: 'pass',
       recommendation: 'Use parameters and Key Vault references instead of hardcoded values',
       priority: 'critical',
+      autoApplicable: true,
+      costImpact: 'none',
     });
 
     return checks;
