@@ -2,21 +2,38 @@ import { useState } from 'react';
 import { useProjectStore } from '../store/projectStore';
 import { bicepGenerator } from '../services/bicepGenerator';
 import { cicdGenerator } from '../services/cicdGenerator';
+import { SmartConnectionsService } from '../services/smartConnections';
 import RegionComparison from './RegionComparison';
 import TagManager from './TagManager';
-import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles } from 'lucide-react';
+import CostAlert from './CostAlert';
+import DeploymentReadinessChecklist from './DeploymentReadinessChecklist';
+import QuickCopyCommands from './QuickCopyCommands';
+import ResourceSearchFilter from './ResourceSearchFilter';
+import ResourceDependencyView from './ResourceDependencyView';
+import ExportFormats from './ExportFormats';
+import CostProjection from './CostProjection';
+import SecurityChecklist from './SecurityChecklist';
+import SmartConnections from './SmartConnections';
+import { downloadWithSetupScript } from '../utils/downloadHelpers';
+import { Download, Copy, Check, FileCode, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles, Package } from 'lucide-react';
 import type { ResourceTag } from '../types/tags';
+import type { ConnectionSuggestion } from '../services/smartConnections';
+import ContextualDocs from './ContextualDocs';
 
 export default function ReviewAndGenerate() {
-  const { project, completeStep } = useProjectStore();
+  const { project, completeStep, updateResource } = useProjectStore();
   const [copied, setCopied] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<string>('infra/main.bicep');
   const [showRegionComparison, setShowRegionComparison] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
+  const [showCommands, setShowCommands] = useState(false);
+  const [showSmartConnections, setShowSmartConnections] = useState(true); // Show by default
   const [includeCICD, setIncludeCICD] = useState(true);
   const [cicdPlatform, setCICDPlatform] = useState<'github' | 'azure'>('github');
   const [tags, setTags] = useState<ResourceTag[]>([]);
   const includeTags = tags.length > 0;
+  
+  const smartConnectionsService = new SmartConnectionsService();
 
   const generatedFiles = bicepGenerator.generateInfrastructureFiles(project, includeTags, tags);
   
@@ -55,17 +72,53 @@ export default function ReviewAndGenerate() {
     completeStep('review');
   };
 
+  const handleDownloadAsPackage = () => {
+    downloadWithSetupScript(generatedFiles, project.name || 'bicepflex-project');
+    completeStep('review');
+  };
+  
+  const handleApplyConnection = (suggestion: ConnectionSuggestion) => {
+    // Apply connection by updating resource dependencies
+    const sourceResource = project.resources.find(r => r.name === suggestion.source);
+    
+    if (sourceResource && !sourceResource.dependencies.includes(suggestion.target)) {
+      updateResource(sourceResource.id, {
+        dependencies: [...sourceResource.dependencies, suggestion.target]
+      });
+    }
+  };
+  
+  const handleApplyAllAutomatic = () => {
+    // Apply all automatic connections at once
+    const suggestions = smartConnectionsService.analyzeConnections(project);
+    const automaticSuggestions = suggestions.filter(s => s.type === 'automatic');
+    
+    automaticSuggestions.forEach(suggestion => {
+      const sourceResource = project.resources.find(r => r.name === suggestion.source);
+      if (sourceResource && !sourceResource.dependencies.includes(suggestion.target)) {
+        updateResource(sourceResource.id, {
+          dependencies: [...sourceResource.dependencies, suggestion.target]
+        });
+      }
+    });
+    
+    setShowSmartConnections(false); // Hide panel after applying
+  };
+
   const fileList = Array.from(generatedFiles.keys());
 
   return (
     <div className="space-y-6">
+      {/* Cost Alert */}
+      <CostAlert totalCost={totalCost} resources={project.resources} />
+      
       {/* Help Banner */}
-      <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-lg p-4">
+      <div className="bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg p-4">
         <div className="flex items-start space-x-3">
-          <Sparkles className="w-5 h-5 text-cyan-600 mt-0.5 flex-shrink-0" />
+          <Sparkles className="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <h4 className="font-semibold text-cyan-900 mb-1">Your Infrastructure as Code is Ready!</h4>
-            <p className="text-sm text-cyan-800 mb-2">
+            <h4 className="font-semibold text-cyan-900 dark:text-cyan-100 mb-1">Your Infrastructure as Code is Ready!</h4>
+            <p className="text-sm text-cyan-800 dark:text-cyan-200 mb-2">
               We've generated production-ready Bicep templates with best practices built-in. All resources are parameterized,
               making it easy to customize for different environments. The templates include proper dependencies, security settings, and Azure CLI deployment scripts.
             </p>
@@ -74,7 +127,7 @@ export default function ReviewAndGenerate() {
                 href="https://learn.microsoft.com/azure/azure-resource-manager/bicep/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-1 text-sm text-cyan-700 hover:text-cyan-900 font-medium"
+                className="inline-flex items-center space-x-1 text-sm text-cyan-700 dark:text-cyan-300 hover:text-cyan-900 dark:hover:text-cyan-100 font-medium"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Bicep Documentation</span>
@@ -84,7 +137,7 @@ export default function ReviewAndGenerate() {
                 href="https://learn.microsoft.com/azure/developer/azure-developer-cli/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-1 text-sm text-cyan-700 hover:text-cyan-900 font-medium"
+                className="inline-flex items-center space-x-1 text-sm text-cyan-700 dark:text-cyan-300 hover:text-cyan-900 dark:hover:text-cyan-100 font-medium"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Azure Developer CLI (azd)</span>
@@ -114,6 +167,41 @@ export default function ReviewAndGenerate() {
         </div>
       </div>
 
+      {/* Deployment Readiness Checklist */}
+      <DeploymentReadinessChecklist />
+      
+      {/* Smart Resource Connections - Show if resources exist and have potential connections */}
+      {showSmartConnections && project.resources.length > 1 && (
+        <SmartConnections
+          config={project}
+          onApplyConnection={handleApplyConnection}
+          onApplyAllAutomatic={handleApplyAllAutomatic}
+        />
+      )}
+      
+      {/* Resource Dependency View */}
+      {project.resources.length > 1 && (
+        <ResourceDependencyView />
+      )}
+      
+      {/* Export Formats */}
+      <ExportFormats />
+
+      {/* Cost Projection */}
+      <CostProjection />
+
+      {/* Security Checklist */}
+      <SecurityChecklist />
+
+      {/* Contextual Documentation - Deployment Guides */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ContextualDocs context="deployment" />
+        <ContextualDocs context="cost" />
+      </div>
+
+      {/* Contextual Documentation - Bicep Reference */}
+      <ContextualDocs context="bicep" />
+
       {/* Modals */}
       <TagManager 
         isOpen={showTagManager} 
@@ -126,26 +214,36 @@ export default function ReviewAndGenerate() {
       <div className="flex flex-wrap gap-3 mb-4">
         <button
           onClick={() => setShowRegionComparison(!showRegionComparison)}
-          className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-primary-200 rounded-lg hover:bg-primary-50 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-primary-200 dark:border-primary-700 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
         >
-          <Globe className="w-5 h-5 text-primary-600" />
-          <span className="font-semibold text-primary-600">
+          <Globe className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+          <span className="font-semibold text-primary-600 dark:text-primary-400">
             {showRegionComparison ? 'Hide' : 'Show'} Regional Comparison
           </span>
         </button>
 
         <button
-          onClick={() => setShowTagManager(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-purple-200 rounded-lg hover:bg-purple-50 transition-colors"
+          onClick={() => setShowCommands(!showCommands)}
+          className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-green-200 dark:border-green-700 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
         >
-          <Tag className="w-5 h-5 text-purple-600" />
-          <span className="font-semibold text-purple-600">
+          <Copy className="w-5 h-5 text-green-600 dark:text-green-400" />
+          <span className="font-semibold text-green-600 dark:text-green-400">
+            {showCommands ? 'Hide' : 'Show'} Quick Commands
+          </span>
+        </button>
+
+        <button
+          onClick={() => setShowTagManager(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-purple-200 dark:border-purple-700 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+        >
+          <Tag className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          <span className="font-semibold text-purple-600 dark:text-purple-400">
             Manage Tags {tags.length > 0 && `(${tags.length})`}
           </span>
         </button>
 
-        <div className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-slate-200 rounded-lg">
-          <GitBranch className="w-5 h-5 text-slate-600" />
+        <div className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-lg">
+          <GitBranch className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           <label className="flex items-center space-x-2 cursor-pointer">
             <input
               type="checkbox"
@@ -153,7 +251,7 @@ export default function ReviewAndGenerate() {
               onChange={(e) => setIncludeCICD(e.target.checked)}
               className="rounded"
             />
-            <span className="font-semibold text-slate-700">Include CI/CD</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Include CI/CD</span>
           </label>
           {includeCICD && (
             <select
@@ -168,39 +266,18 @@ export default function ReviewAndGenerate() {
         </div>
       </div>
 
+      {/* Quick Copy Commands */}
+      {showCommands && (
+        <div className="mb-6">
+          <QuickCopyCommands project={project} />
+        </div>
+      )}
+
       {/* Regional Comparison */}
       {showRegionComparison && <RegionComparison />}
 
-      {/* Resources List */}
-      <div className="card">
-        <h3 className="font-semibold text-lg mb-4">Your Resources</h3>
-        <div className="space-y-2">
-          {project.resources.map((resource) => (
-            <div
-              key={resource.id}
-              className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
-            >
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">{resource.displayName.split(' ')[0]}</span>
-                <div>
-                  <p className="font-medium">{resource.displayName}</p>
-                  <p className="text-sm text-slate-500">
-                    {resource.sku.tier} - {resource.sku.name}
-                  </p>
-                </div>
-              </div>
-              {resource.pricing && (
-                <div className="text-right">
-                  <div className="flex items-center space-x-1 text-green-600 font-semibold">
-                    <DollarSign className="w-4 h-4" />
-                    <span>${resource.pricing.estimatedMonthlyCost.toFixed(2)}/mo</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Resource Search & Filter */}
+      <ResourceSearchFilter />
 
       {/* Generated Files */}
       <div className="card">
@@ -210,25 +287,31 @@ export default function ReviewAndGenerate() {
               <FileCode className="w-5 h-5" />
               <span>Generated Files</span>
             </h3>
-            <p className="text-sm text-slate-600 mt-1">
-              All Bicep files use parameters for flexibility. Customize values via <code className="px-1 py-0.5 bg-slate-100 rounded text-xs">main.parameters.json</code> or at deployment time.
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              All Bicep files use parameters for flexibility. Customize values via <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-xs">main.parameters.json</code> or at deployment time.
             </p>
           </div>
-          <button onClick={handleDownloadAll} className="btn-primary flex items-center space-x-2">
-            <Download className="w-5 h-5" />
-            <span>Download All</span>
-          </button>
+          <div className="flex gap-2">
+            <button onClick={handleDownloadAll} className="btn-secondary flex items-center space-x-2">
+              <Download className="w-5 h-5" />
+              <span>Download All</span>
+            </button>
+            <button onClick={handleDownloadAsPackage} className="btn-primary flex items-center space-x-2">
+              <Package className="w-5 h-5" />
+              <span>Download as Package</span>
+            </button>
+          </div>
         </div>
 
         {/* File Descriptions */}
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-semibold text-blue-900 mb-2 flex items-center space-x-2">
+        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center space-x-2">
             <Info className="w-4 h-4" />
             <span>Understanding the Generated Files</span>
           </h4>
-          <div className="space-y-2 text-sm text-blue-800">
+          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
             <div className="flex items-start space-x-2">
-              <span className="font-mono text-xs bg-blue-100 px-2 py-1 rounded mt-0.5">infra/main.bicep</span>
+              <span className="font-mono text-xs bg-blue-100 dark:bg-blue-900/40 px-2 py-1 rounded mt-0.5">infra/main.bicep</span>
               <span>Core infrastructure definition with all Azure resources</span>
             </div>
             <div className="flex items-start space-x-2">

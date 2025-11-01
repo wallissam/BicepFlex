@@ -17,17 +17,18 @@
   },
   "include": [
     "cli/**/*",
-    "src/services/**/*",
-    "src/data/**/*",
+    "src/services/bicepGenerator.ts",
+    "src/services/bestPracticesValidator.ts",
+    "src/services/cicdGenerator.ts",
+    "src/services/azurePricing.ts",
+    "src/data/projectTemplates.ts",
     "src/types/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "src/components",
-    "src/hooks",
-    "src/store",
-    "src/App.tsx",
-    "src/main.tsx"
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

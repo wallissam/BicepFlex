@@ -1,9 +1,9 @@
-import type { ProjectConfig, ResourceConfig, BicepTemplate, AzdConfig } from '../types/index.js';
+import type { ProjectConfig, ResourceConfig, BicepTemplate, AzdConfig, BicepParameter, BicepOutput } from '../types/index.js';
 import YAML from 'yaml';
 
 export class BicepGenerator {
   generateBicepTemplate(config: ProjectConfig, includeTags = false, tags: Array<{key: string, value: string}> = []): BicepTemplate {
-    const parameters: Record<string, any> = {
+    const parameters: Record<string, BicepParameter> = {
       location: {
         type: 'string',
         defaultValue: config.region,
@@ -21,7 +21,7 @@ export class BicepGenerator {
       },
     };
 
-    const outputs: Record<string, any> = {};
+    const outputs: Record<string, BicepOutput> = {};
     const resources: string[] = [];
 
     // Add resource group reference
@@ -30,7 +30,7 @@ export class BicepGenerator {
 
     // Generate each resource
     for (const resource of config.resources) {
-      const bicep = this.generateResourceBicep(resource, config);
+      const bicep = this.generateResourceBicep(resource);
       resources.push(bicep);
       resources.push('');
 
@@ -63,7 +63,7 @@ export class BicepGenerator {
     };
   }
 
-  private generateParameterBicep(name: string, param: any): string {
+  private generateParameterBicep(name: string, param: BicepParameter): string {
     let bicep = `@description('${param.metadata?.description || ''}')\n`;
     
     if (param.minLength !== undefined) {
@@ -83,7 +83,7 @@ export class BicepGenerator {
     return bicep;
   }
 
-  private generateResourceBicep(resource: ResourceConfig, _config: ProjectConfig): string {
+  private generateResourceBicep(resource: ResourceConfig): string {
     switch (resource.type) {
       case 'webApp':
         return this.generateWebAppBicep(resource);
@@ -393,7 +393,7 @@ resource ${resource.name} 'Microsoft.Insights/components@2020-02-02' = {
       if (['webApp', 'staticWebApp', 'functionApp', 'containerApp'].includes(resource.type)) {
         azdConfig.services[resource.name] = {
           project: `./${resource.name}`,
-          language: resource.properties.language || 'ts',
+          language: String(resource.properties.language || 'ts'),
           host: this.getAzdHost(resource.type),
         };
       }
@@ -440,7 +440,7 @@ resource ${resource.name} 'Microsoft.Insights/components@2020-02-02' = {
     // Generate .azure/config
     const azureConfig = `defaults:
   location: ${config.region}
-  subscription: $\{AZURE_SUBSCRIPTION_ID\}
+  subscription: \${AZURE_SUBSCRIPTION_ID}
 `;
     files.set('.azure/config', azureConfig);
 

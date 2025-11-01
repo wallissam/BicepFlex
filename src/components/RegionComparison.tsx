@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { useProjectStore } from '../store/projectStore';
 import { azurePricingService } from '../services/azurePricing';
 import { serviceNameMapping } from '../data/resourceTemplates';
@@ -16,8 +16,8 @@ export default function RegionComparison() {
   ]);
 
   // Fetch pricing for all selected regions
-  const pricingQueries = selectedRegions.map((region) =>
-    useQuery({
+  const pricingQueries = useQueries({
+    queries: selectedRegions.map((region) => ({
       queryKey: ['region-comparison', region, project.resources],
       queryFn: async () => {
         const costs = await Promise.all(
@@ -37,8 +37,8 @@ export default function RegionComparison() {
         };
       },
       enabled: project.resources.length > 0,
-    })
-  );
+    })),
+  });
 
   const isLoading = pricingQueries.some((q) => q.isLoading);
   const allData = pricingQueries.map((q) => q.data).filter(Boolean);

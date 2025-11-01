@@ -50,7 +50,7 @@ export interface ResourceConfig {
   displayName: string;
   sku: AzureSKU;
   region: string;
-  properties: Record<string, any>;
+  properties: Record<string, string | number | boolean | undefined>;
   dependencies: string[];
   pricing?: PricingInfo;
 }
@@ -61,6 +61,7 @@ export interface ProjectConfig {
   region: string;
   resources: ResourceConfig[];
   estimatedMonthlyCost: number;
+  cicd?: string;
 }
 
 // Wizard Step
@@ -104,17 +105,41 @@ export interface AzureRetailPriceResponse {
   Count: number;
 }
 
+// Bicep Parameter Definition
+export interface BicepParameter {
+  type: string;
+  defaultValue?: string | number | boolean;
+  minLength?: number;
+  maxLength?: number;
+  metadata?: {
+    description?: string;
+  };
+}
+
+// Bicep Output Definition
+export interface BicepOutput {
+  type: string;
+  value: string;
+}
+
 // Template Generation
 export interface BicepTemplate {
   content: string;
-  parameters: Record<string, any>;
-  outputs: Record<string, any>;
+  parameters: Record<string, BicepParameter>;
+  outputs: Record<string, BicepOutput>;
+}
+
+// Azure Developer CLI Service Configuration
+export interface AzdService {
+  project?: string;
+  language?: string;
+  host?: string;
 }
 
 export interface AzdConfig {
   name: string;
-  services: Record<string, any>;
-  resources?: Record<string, any>;
+  services: Record<string, AzdService>;
+  resources?: Record<string, unknown>;
 }
 
 // Resource Templates
