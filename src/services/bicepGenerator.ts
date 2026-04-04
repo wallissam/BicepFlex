@@ -1,9 +1,9 @@
-import type { ProjectConfig, ResourceConfig, BicepTemplate, AzdConfig } from '../types/index.js';
+import type { ProjectConfig, ResourceConfig, BicepTemplate, AzdConfig, BicepParameterDefinition, BicepOutputDefinition } from '../types/index.js';
 import YAML from 'yaml';
 
 export class BicepGenerator {
   generateBicepTemplate(config: ProjectConfig, includeTags = false, tags: Array<{key: string, value: string}> = []): BicepTemplate {
-    const parameters: Record<string, any> = {
+    const parameters: Record<string, BicepParameterDefinition> = {
       location: {
         type: 'string',
         defaultValue: config.region,
@@ -21,7 +21,7 @@ export class BicepGenerator {
       },
     };
 
-    const outputs: Record<string, any> = {};
+    const outputs: Record<string, BicepOutputDefinition> = {};
     const resources: string[] = [];
 
     // Add resource group reference
@@ -30,7 +30,7 @@ export class BicepGenerator {
 
     // Generate each resource
     for (const resource of config.resources) {
-      const bicep = this.generateResourceBicep(resource, config);
+      const bicep = this.generateResourceBicep(resource);
       resources.push(bicep);
       resources.push('');
 
@@ -63,7 +63,7 @@ export class BicepGenerator {
     };
   }
 
-  private generateParameterBicep(name: string, param: any): string {
+  private generateParameterBicep(name: string, param: BicepParameterDefinition): string {
     let bicep = `@description('${param.metadata?.description || ''}')\n`;
     
     if (param.minLength !== undefined) {
@@ -83,7 +83,7 @@ export class BicepGenerator {
     return bicep;
   }
 
-  private generateResourceBicep(resource: ResourceConfig, _config: ProjectConfig): string {
+  private generateResourceBicep(resource: ResourceConfig): string {
     switch (resource.type) {
       case 'webApp':
         return this.generateWebAppBicep(resource);
@@ -103,8 +103,14 @@ export class BicepGenerator {
         return this.generateKeyVaultBicep(resource);
       case 'appInsights':
         return this.generateAppInsightsBicep(resource);
+      case 'serviceBus':
+        return this.generateServiceBusBicep(resource);
+      case 'redis':
+        return this.generateRedisBicep(resource);
+      case 'containerRegistry':
+        return this.generateContainerRegistryBicep(resource);
       default:
-        return `// TODO: Implement ${resource.type}`;
+        return `// Resource type '${resource.type}' - manual configuration required\n// See: https://learn.microsoft.com/azure/templates/`;
     }
   }
 
@@ -382,6 +388,53 @@ resource ${resource.name} 'Microsoft.Insights/components@2020-02-02' = {
 }`;
   }
 
+  private generateServiceBusBicep(resource: ResourceConfig): string {
+    return `// Service Bus Namespace for ${resource.displayName}
+resource ${resource.name} 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
+  name: '\${environmentName}-${resource.name}'
+  location: location
+  sku: {
+    name: '${resource.sku.name}'
+    tier: '${resource.sku.tier}'
+  }
+}`;
+  }
+
+  private generateRedisBicep(resource: ResourceConfig): string {
+    return `// Azure Cache for Redis for ${resource.displayName}
+resource ${resource.name} 'Microsoft.Cache/redis@2023-08-01' = {
+  name: '\${environmentName}-${resource.name}'
+  location: location
+  properties: {
+    sku: {
+      name: '${resource.sku.name}'
+      family: '${resource.sku.family || 'C'}'
+      capacity: ${resource.sku.capacity ?? 0}
+    }
+    enableNonSslPort: false
+    minimumTlsVersion: '1.2'
+    redisConfiguration: {
+      'maxmemory-policy': 'allkeys-lru'
+    }
+  }
+}`;
+  }
+
+  private generateContainerRegistryBicep(resource: ResourceConfig): string {
+    return `// Container Registry for ${resource.displayName}
+resource ${resource.name} 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
+  name: '\${replace(environmentName, '-', '')}${resource.name}'
+  location: location
+  sku: {
+    name: '${resource.sku.name}'
+  }
+  properties: {
+    adminUserEnabled: false
+    publicNetworkAccess: 'Enabled'
+  }
+}`;
+  }
+
   generateAzdConfig(config: ProjectConfig): string {
     const azdConfig: AzdConfig = {
       name: config.name,
@@ -393,7 +446,7 @@ resource ${resource.name} 'Microsoft.Insights/components@2020-02-02' = {
       if (['webApp', 'staticWebApp', 'functionApp', 'containerApp'].includes(resource.type)) {
         azdConfig.services[resource.name] = {
           project: `./${resource.name}`,
-          language: resource.properties.language || 'ts',
+          language: String(resource.properties.language || 'ts'),
           host: this.getAzdHost(resource.type),
         };
       }
@@ -440,7 +493,7 @@ resource ${resource.name} 'Microsoft.Insights/components@2020-02-02' = {
     // Generate .azure/config
     const azureConfig = `defaults:
   location: ${config.region}
-  subscription: $\{AZURE_SUBSCRIPTION_ID\}
+  subscription: \${AZURE_SUBSCRIPTION_ID}
 `;
     files.set('.azure/config', azureConfig);
 
