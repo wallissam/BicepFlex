@@ -58,13 +58,23 @@ export class AzurePricingService {
       const key = price.armSkuName || price.skuName;
       
       if (!pricingMap.has(key)) {
-        // Estimate monthly cost (assuming 730 hours per month)
+        // Estimate monthly cost based on unit of measure
         const hoursPerMonth = 730;
         let estimatedMonthlyCost = price.unitPrice;
 
-        // Adjust based on unit of measure
         if (price.unitOfMeasure === '1 Hour') {
           estimatedMonthlyCost = price.unitPrice * hoursPerMonth;
+        } else if (price.unitOfMeasure === '1/Day') {
+          estimatedMonthlyCost = price.unitPrice * 30;
+        } else if (price.unitOfMeasure === '1/Month' || price.unitOfMeasure.includes('/Month')) {
+          estimatedMonthlyCost = price.unitPrice;
+        } else if (price.unitOfMeasure === '1 GB' || price.unitOfMeasure === '1 GB/Month') {
+          // Storage: estimate 100 GB usage
+          estimatedMonthlyCost = price.unitPrice * 100;
+        } else if (price.unitOfMeasure.includes('Transaction')) {
+          // Transaction-based: estimate 1M transactions/month
+          const multiplier = parseInt(price.unitOfMeasure.replace(/[^0-9]/g, '')) || 1;
+          estimatedMonthlyCost = (price.unitPrice / multiplier) * 1_000_000;
         }
 
         pricingMap.set(key, {

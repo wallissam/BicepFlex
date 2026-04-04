@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useProjectStore } from '../store/projectStore';
 import { bicepGenerator } from '../services/bicepGenerator';
 import { cicdGenerator } from '../services/cicdGenerator';
+import { resourceTemplates } from '../data/resourceTemplates';
+import { bestPracticesValidator } from '../services/bestPracticesValidator';
 import RegionComparison from './RegionComparison';
 import TagManager from './TagManager';
-import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles } from 'lucide-react';
+import { Download, Copy, Check, FileCode, DollarSign, Globe, GitBranch, Tag, ExternalLink, BookOpen, Info, Sparkles, AlertTriangle, AlertCircle } from 'lucide-react';
 import type { ResourceTag } from '../types/tags';
 
 export default function ReviewAndGenerate() {
@@ -35,6 +37,11 @@ export default function ReviewAndGenerate() {
     (sum, r) => sum + (r.pricing?.estimatedMonthlyCost || 0),
     0
   );
+
+  const validationIssues = bestPracticesValidator.validate(project);
+  const errors = validationIssues.filter(i => i.severity === 'error');
+  const warnings = validationIssues.filter(i => i.severity === 'warning');
+  const infos = validationIssues.filter(i => i.severity === 'info');
 
   const handleCopy = async (content: string, filename: string) => {
     await navigator.clipboard.writeText(content);
@@ -114,6 +121,50 @@ export default function ReviewAndGenerate() {
         </div>
       </div>
 
+      {/* Validation Results */}
+      {validationIssues.length > 0 && (
+        <div className="card">
+          <h3 className="font-semibold text-lg mb-4 flex items-center space-x-2">
+            <AlertTriangle className="w-5 h-5 text-amber-500" />
+            <span>Best Practices Check</span>
+            <span className="text-sm font-normal text-slate-500">
+              ({errors.length} errors, {warnings.length} warnings, {infos.length} suggestions)
+            </span>
+          </h3>
+          <div className="space-y-2">
+            {validationIssues.map((issue, idx) => (
+              <div
+                key={idx}
+                className={`flex items-start space-x-3 p-3 rounded-lg ${
+                  issue.severity === 'error'
+                    ? 'bg-red-50 border border-red-200'
+                    : issue.severity === 'warning'
+                    ? 'bg-amber-50 border border-amber-200'
+                    : 'bg-blue-50 border border-blue-200'
+                }`}
+              >
+                {issue.severity === 'error' ? (
+                  <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                ) : issue.severity === 'warning' ? (
+                  <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                ) : (
+                  <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                )}
+                <div>
+                  <div className="font-medium text-sm">
+                    {issue.resource && (
+                      <span className="text-slate-500 mr-1">[{issue.resource}]</span>
+                    )}
+                    {issue.message}
+                  </div>
+                  <div className="text-xs text-slate-600 mt-0.5">{issue.recommendation}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Modals */}
       <TagManager 
         isOpen={showTagManager} 
@@ -181,7 +232,7 @@ export default function ReviewAndGenerate() {
               className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
             >
               <div className="flex items-center space-x-3">
-                <span className="text-2xl">{resource.displayName.split(' ')[0]}</span>
+                <span className="text-2xl">{resourceTemplates[resource.type]?.icon || '📦'}</span>
                 <div>
                   <p className="font-medium">{resource.displayName}</p>
                   <p className="text-sm text-slate-500">
