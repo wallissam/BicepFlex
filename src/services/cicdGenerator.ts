@@ -2,7 +2,7 @@ import type { ProjectConfig } from '../types/index.js';
 
 export class CICDGenerator {
   generateGitHubActions(config: ProjectConfig): string {
-    const hasWebApp = config.resources.some((r: any) => 
+    const hasWebApp = config.resources.some((r) => 
       ['staticWebApp', 'webApp', 'functionApp'].includes(r.type)
     );
 
@@ -69,7 +69,7 @@ ${buildSteps}
   }
 
   generateAzurePipelines(config: ProjectConfig): string {
-    const hasWebApp = config.resources.some((r: any) => 
+    const hasWebApp = config.resources.some((r) => 
       ['staticWebApp', 'webApp', 'functionApp'].includes(r.type)
     );
 
@@ -169,7 +169,7 @@ stages:
   }
 
   generateDeploymentScript(config: ProjectConfig): string {
-    const hasWebApp = config.resources.some((r: any) => 
+    const hasWebApp = config.resources.some((r) => 
       ['staticWebApp', 'webApp', 'functionApp'].includes(r.type)
     );
 
@@ -224,17 +224,17 @@ if ! az account show &> /dev/null; then
 fi
 ${buildSection}
 # Set environment variables
-export AZURE_ENV_NAME="\${AZURE_ENV_NAME:-${config.name}-\$(date +%s)}"
+export AZURE_ENV_NAME="\${AZURE_ENV_NAME:-${config.name}-$(date +%s)}"
 export AZURE_LOCATION="${config.region}"
 
-echo "🌍 Environment: \$AZURE_ENV_NAME"
-echo "📍 Location: \$AZURE_LOCATION"
+echo "🌍 Environment: $AZURE_ENV_NAME"
+echo "📍 Location: $AZURE_LOCATION"
 echo ""
 
 # Initialize azd environment (if not already done)
-if [ ! -f ".azure/\$AZURE_ENV_NAME/.env" ]; then
+if [ ! -f ".azure/$AZURE_ENV_NAME/.env" ]; then
     echo "🔧 Initializing azd environment..."
-    azd env new \$AZURE_ENV_NAME --location \$AZURE_LOCATION
+    azd env new $AZURE_ENV_NAME --location $AZURE_LOCATION
 fi
 
 # Provision infrastructure
@@ -292,13 +292,13 @@ This configuration deploys the following Azure resources to **${config.region}**
 
 ${config.resources
   .map(
-    (r: any) =>
+    (r) =>
       `- **${r.displayName}** (${r.sku.tier} - ${r.sku.name})\n  ${r.name}`
   )
   .join('\n')}
 
 **Estimated Monthly Cost:** $${config.resources
-      .reduce((sum: number, r: any) => sum + (r.pricing?.estimatedMonthlyCost || 0), 0)
+      .reduce((sum, r) => sum + (r.pricing?.estimatedMonthlyCost || 0), 0)
       .toFixed(2)}
 
 ## 🛠️ Development Commands

@@ -50,7 +50,7 @@ export interface ResourceConfig {
   displayName: string;
   sku: AzureSKU;
   region: string;
-  properties: Record<string, any>;
+  properties: Record<string, string | number | boolean>;
   dependencies: string[];
   pricing?: PricingInfo;
 }
@@ -107,14 +107,38 @@ export interface AzureRetailPriceResponse {
 // Template Generation
 export interface BicepTemplate {
   content: string;
-  parameters: Record<string, any>;
-  outputs: Record<string, any>;
+  parameters: Record<string, BicepParameterDefinition>;
+  outputs: Record<string, BicepOutputDefinition>;
+}
+
+export interface BicepParameterDefinition {
+  type: string;
+  defaultValue?: string;
+  minLength?: number;
+  maxLength?: number;
+  metadata?: { description: string };
+}
+
+export interface BicepOutputDefinition {
+  type: string;
+  value: string;
 }
 
 export interface AzdConfig {
   name: string;
-  services: Record<string, any>;
-  resources?: Record<string, any>;
+  services: Record<string, AzdServiceConfig>;
+  resources?: Record<string, AzdResourceConfig>;
+}
+
+export interface AzdServiceConfig {
+  project: string;
+  language: string;
+  host: string;
+}
+
+export interface AzdResourceConfig {
+  type: string;
+  [key: string]: string;
 }
 
 // Resource Templates
